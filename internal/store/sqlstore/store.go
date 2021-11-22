@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"database/sql"
-	"spotify-clone/server/config"
 	"spotify-clone/server/internal/store"
 
 	_ "github.com/lib/pq"
@@ -14,12 +13,8 @@ type Store struct {
 	userRepository *UserRepository
 }
 
-func New() (*Store, error) {
-	s, err := config.NewDBConfig()
-	if err != nil {
-		return nil, err
-	}
-	db, err := sql.Open("postgres", s)
+func New(config string) (*Store, error) {
+	db, err := sql.Open("postgres", config)
 	if err != nil {
 		return nil, err
 	}

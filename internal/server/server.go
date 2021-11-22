@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"spotify-clone/server/config"
 	"spotify-clone/server/internal/store"
 	"spotify-clone/server/internal/store/sqlstore"
 
@@ -14,7 +15,11 @@ type Server struct {
 }
 
 func New() (*Server, error) {
-	s, err := sqlstore.New()
+	dbconfig, err := config.NewDBConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	s, err := sqlstore.New(dbconfig)
 	if err != nil {
 		log.Fatal(err)
 	}
