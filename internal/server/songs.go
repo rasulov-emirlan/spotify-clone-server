@@ -23,7 +23,7 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 			s.Error(http.StatusBadRequest, "unable to read audio file", err, c)
 			return err
 		}
-		song := &models.Song{
+		song := models.Song{
 			Title: title,
 			Author: models.User{
 				ID: authorId,
@@ -31,10 +31,10 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 			URL: "database/audio/" + title + ".mp3",
 		}
 
-		if err := s.store.Song().Create(song); err != nil {
-			s.Error(http.StatusInternalServerError, "unable to save info into database", err, c)
-			return err
-		}
+		// if err := s.store.Song().Create(); err != nil {
+		// 	s.Error(http.StatusInternalServerError, "unable to save info into database", err, c)
+		// 	return err
+		// }
 
 		if err := song.UploadSong(audio); err != nil {
 			s.Error(http.StatusInternalServerError, "unable to save audio file into database", err, c)

@@ -3,20 +3,25 @@ package server
 import (
 	"log"
 	"spotify-clone/server/internal/store"
+	"spotify-clone/server/internal/store/sqlstore"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
 	router *echo.Echo
-	store  *store.Store
+	store  store.Store
 }
 
-func New(store *store.Store) (*Server, error) {
+func New() (*Server, error) {
+	s, err := sqlstore.New()
+	if err != nil {
+		log.Fatal(err)
+	}
 	e := echo.New()
 	return &Server{
 		router: e,
-		store:  store,
+		store:  s,
 	}, nil
 }
 
