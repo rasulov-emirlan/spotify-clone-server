@@ -13,6 +13,16 @@ type Song struct {
 	URL    string `json:"url"`
 }
 
+func TestSong() *Song {
+	return &Song{
+		Title: "Dancing Machine",
+		Author: User{
+			ID: 1,
+		},
+		URL: "youtube.com",
+	}
+}
+
 func (s *Song) UploadSong(audiofile *multipart.FileHeader) error {
 	src, err := audiofile.Open()
 	if err != nil {

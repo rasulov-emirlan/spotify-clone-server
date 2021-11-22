@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"database/sql"
 	"spotify-clone/server/internal/store"
+	"testing"
 
 	_ "github.com/lib/pq"
 )
@@ -21,6 +22,23 @@ func New(config string) (*Store, error) {
 	return &Store{
 		db: db,
 	}, nil
+}
+
+func TestDB(t *testing.T, databaseURL string) (store.Store, func(string)) {
+	t.Helper()
+	db, err := sql.Open("postgres", databaseURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Ping(); err != nil {
+		t.Fatal(err)
+	}
+	return &Store{db: db}, func(tables string) {
+		if len(tables) > 0 {
+			db.Exec("TRUNCATE %s CASCADE", tables)
+		}
+		db.Close()
+	}
 }
 
 func (s *Store) Song() store.SongRepository {

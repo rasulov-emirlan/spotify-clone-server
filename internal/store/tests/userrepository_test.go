@@ -6,23 +6,28 @@ import (
 )
 
 func TestUserRepository_Create(t *testing.T) {
-	tstore := New()
-	user := &models.User{}
-	err := tstore.User().Create(user)
+	tstore, destructor := New(t)
+	defer destructor("users")
+	user := models.TestUser()
+	_, err := tstore.User().Create(user)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestUserRepository_FindByID(t *testing.T) {
-	tstore := New()
-	user := &models.User{}
-	err := tstore.User().Create(user)
+	tstore, destructor := New(t)
+	defer destructor("users")
+	user := models.TestUser()
+	id, err := tstore.User().Create(user)
 	if err != nil {
 		t.Error(err)
 	}
-	user, err = tstore.User().FindByID(1)
-	if user == nil {
+	user, err = tstore.User().FindByID(id)
+	if err != nil {
 		t.Error(err)
+	}
+	if user == nil {
+		t.Error("user is nil")
 	}
 }

@@ -8,11 +8,11 @@ type Store interface {
 }
 
 type SongRepository interface {
-	Create(s *models.Song) error
+	Create(s *models.Song) (int, error)
 	FindByID(id int) (*models.Song, error)
 }
 
 type UserRepository interface {
-	Create(u *models.User) error
+	Create(u *models.User) (int, error)
 	FindByID(id int) (*models.User, error)
 }
