@@ -2,11 +2,15 @@ package main
 
 import (
 	"log"
+	"spotify-clone/server/config"
 	"spotify-clone/server/internal/server"
 )
 
 func main() {
-	var port string = "8080"
+	port, err := config.NewPortForServer()
+	if err != nil {
+		log.Fatal(err)
+	}
 	apiserver, err := server.New()
 	if err != nil {
 		log.Fatal(err)

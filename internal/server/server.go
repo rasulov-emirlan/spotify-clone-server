@@ -15,7 +15,7 @@ type Server struct {
 }
 
 func New() (*Server, error) {
-	dbconfig, err := config.NewDBConfig()
+	dbconfig, err := config.NewSQLDBconfig()
 	if err != nil {
 		log.Fatal(err)
 	}

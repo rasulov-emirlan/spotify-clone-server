@@ -8,9 +8,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// NewDBConfig: this function reads config data from ".env" file
+func NewPortForServer() (string, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		return "", err
+	}
+	port := os.Getenv("PORT")
+	return port, nil
+}
+
+// NewSQLDBconfig: this function reads config data from ".env" file
 // and it reads it from the repository that you are executing the application
-func NewDBConfig() (string, error) {
+func NewSQLDBconfig() (string, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
 		return "", err
@@ -36,11 +45,11 @@ func NewDBConfig() (string, error) {
 	return result, nil
 }
 
-// NewTestDBConfig: this function requires you to have ".test.env" file
+// NewTESTSQLDBconfig: this function requires you to have ".test.env" file
 // if you want to use it for testing than the ".test.env" file should be in the root
 // of the package that you are testing
 // !!!dont specify reall data in ".test.env" use some mockups
-func NewTestDBConfig() (string, error) {
+func NewTESTSQLDBconfig() (string, error) {
 	err := godotenv.Load(".test.env")
 	if err != nil {
 		return "", err

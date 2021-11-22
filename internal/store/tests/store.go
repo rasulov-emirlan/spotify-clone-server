@@ -11,7 +11,7 @@ type Store struct {
 }
 
 func New() *sqlstore.Store {
-	config, err := config.NewTestDBConfig()
+	config, err := config.NewTESTSQLDBconfig()
 	if err != nil {
 		log.Fatal(err)
 	}

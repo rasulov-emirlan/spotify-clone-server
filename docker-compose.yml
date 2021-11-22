@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+  db:
+    image: postgres:12.2-alpine
+    container_name: "database"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - fullstack
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+  web:
+    build: .
+    container_name: "spotify-clone-server"
+    environment:
+      PORT: "5000"
+      DBHOST: "db"
+      DBPORT: "5432"
+      DBUSER: "postgres"
+      DBPASSWORD: "postgres"
+      DBNAME: "spotify-clone"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - fullstack
+
+volumes:
+  database_postgres:
+
+networks:
+ fullstack:
+  driver: bridge
