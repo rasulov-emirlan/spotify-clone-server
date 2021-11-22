@@ -9,6 +9,8 @@
 1. /audio
 2. /images
 - create .env file in the root of the project
+- start postgres server and create a database
+- in postgres database query all sql files from `migrations/sql` repository that end in `.up.sql`
 - than you are required to have a golang of version 1.17 at least
 - now that you have everything setup just run `make`
 in the root of the project
