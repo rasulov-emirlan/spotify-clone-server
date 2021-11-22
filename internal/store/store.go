@@ -8,7 +8,7 @@ type Store interface {
 }
 
 type SongRepository interface {
-	Create(s *models.Song) (int, error)
+	Create(s *models.Song) error
 	FindByID(id int) (*models.Song, error)
 }
 

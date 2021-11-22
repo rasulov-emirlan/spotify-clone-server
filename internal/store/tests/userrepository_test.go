@@ -6,8 +6,10 @@ import (
 )
 
 func TestUserRepository_Create(t *testing.T) {
-	tstore, destructor := New(t)
+	tstore, destructor, close := New(t)
 	defer destructor("users")
+	destructor("users")
+	defer close()
 	user := models.TestUser()
 	_, err := tstore.User().Create(user)
 	if err != nil {
@@ -16,8 +18,10 @@ func TestUserRepository_Create(t *testing.T) {
 }
 
 func TestUserRepository_FindByID(t *testing.T) {
-	tstore, destructor := New(t)
+	tstore, destructor, close := New(t)
 	defer destructor("users")
+	destructor("users")
+	defer close()
 	user := models.TestUser()
 	id, err := tstore.User().Create(user)
 	if err != nil {

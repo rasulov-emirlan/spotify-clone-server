@@ -12,7 +12,7 @@ type Store struct {
 	store *sqlstore.Store
 }
 
-func New(t *testing.T) (store.Store, func(string)) {
+func New(t *testing.T) (store.Store, func(string), func()) {
 	config, err := config.NewTESTSQLDBconfig()
 	if err != nil {
 		log.Fatal(err)

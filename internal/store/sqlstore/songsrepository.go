@@ -9,23 +9,16 @@ type SongRepository struct {
 	db *sql.DB
 }
 
-func (r *SongRepository) Create(s *models.Song) (int, error) {
-	row, err := r.db.Query(`
+func (r *SongRepository) Create(s *models.Song) error {
+	return r.db.QueryRow(`
 	INSERT INTO 
 	songs(
 		title, author_id, url
 	)
 	VALUES (
 		$1, $2, $3
-	) returning id;
-	`, s.Title, s.Author.ID, s.URL)
-
-	var id int
-
-	if row.Next() {
-		row.Scan(&id)
-	}
-	return id, err
+	) RETURNING id;
+	`, s.Title, s.Author.ID, s.URL).Scan(&s.ID)
 }
 
 func (r *SongRepository) FindByID(id int) (*models.Song, error) {
@@ -46,6 +39,7 @@ func (r *SongRepository) FindByID(id int) (*models.Song, error) {
 			&result.URL,
 		)
 	}
+	result.Author.ID = id
 	return result, nil
 }
 

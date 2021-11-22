@@ -1,32 +1,48 @@
 package teststore
 
 import (
+	"log"
+	"spotify-clone/server/config"
 	"spotify-clone/server/internal/models"
+	"spotify-clone/server/internal/store/sqlstore"
 	"testing"
 )
 
 func TestSongRepository_Create(t *testing.T) {
-	tstore, destructor := New(t)
-	defer destructor("songs")
+	config, err := config.NewTESTSQLDBconfig()
+	if err != nil {
+		t.Error(err)
+	}
+	tstore, destructor, close := sqlstore.TestDB(t, config)
+	destructor("songs")
+	defer close()
 	song := models.TestSong()
-	_, err := tstore.Song().Create(song)
+	err = tstore.Song().Create(song)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestSongRepository_FindByID(t *testing.T) {
-	tstore, destructor := New(t)
+	config, err := config.NewTESTSQLDBconfig()
+	if err != nil {
+		t.Error(err)
+	}
+	tstore, destructor, close := sqlstore.TestDB(t, config)
 	defer destructor("songs")
+	defer close()
+	destructor("songs")
 	song := models.TestSong()
-	id, err := tstore.Song().Create(song)
+	err = tstore.Song().Create(song)
 	if err != nil {
 		t.Error(err)
 	}
-	song, err = tstore.Song().FindByID(id)
+	log.Println(1)
+	song, err = tstore.Song().FindByID(song.ID)
 	if err != nil {
 		t.Error(err)
 	}
+	log.Println(2)
 	if song == models.TestSong() {
 		t.Error(err)
 	}

@@ -24,7 +24,7 @@ func New(config string) (*Store, error) {
 	}, nil
 }
 
-func TestDB(t *testing.T, databaseURL string) (store.Store, func(string)) {
+func TestDB(t *testing.T, databaseURL string) (store.Store, func(string), func()) {
 	t.Helper()
 	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
@@ -33,12 +33,18 @@ func TestDB(t *testing.T, databaseURL string) (store.Store, func(string)) {
 	if err := db.Ping(); err != nil {
 		t.Fatal(err)
 	}
-	return &Store{db: db}, func(tables string) {
-		if len(tables) > 0 {
+	return &Store{
+			db:             db,
+			userRepository: &UserRepository{db: db},
+			songRepository: &SongRepository{db: db},
+		}, func(tables string) {
+
 			db.Exec("TRUNCATE %s CASCADE", tables)
+
+		}, func() {
+			db.Close()
+
 		}
-		db.Close()
-	}
 }
 
 func (s *Store) Song() store.SongRepository {
