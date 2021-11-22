@@ -9,8 +9,8 @@ type SongRepository struct {
 	db *sql.DB
 }
 
-func (song *SongRepository) Create(s *models.Song) error {
-	_, err := song.db.Query(`
+func (r *SongRepository) Create(s *models.Song) error {
+	_, err := r.db.Query(`
 	INSERT INTO 
 	songs(
 		title, author_id, url
@@ -27,8 +27,8 @@ func (song *SongRepository) Create(s *models.Song) error {
 	return nil
 }
 
-func (song *SongRepository) FindByID(id int) (*models.Song, error) {
-	rows, err := song.db.Query(`
+func (r *SongRepository) FindByID(id int) (*models.Song, error) {
+	rows, err := r.db.Query(`
 	SELECT id, title, author_id, url
 	FROM songs
 	WHERE id = $1;

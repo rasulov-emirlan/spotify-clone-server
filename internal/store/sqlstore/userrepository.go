@@ -9,10 +9,10 @@ type UserRepository struct {
 	db *sql.DB
 }
 
-func (u *UserRepository) Create() error {
+func (r *UserRepository) Create(u *models.User) error {
 	return nil
 }
 
-func (u *UserRepository) FindByID(id int) (*models.User, error) {
+func (r *UserRepository) FindByID(id int) (*models.User, error) {
 	return nil, nil
 }
