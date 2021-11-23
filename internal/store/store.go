@@ -13,6 +13,6 @@ type SongRepository interface {
 }
 
 type UserRepository interface {
-	Create(u *models.User) (int, error)
+	Create(u *models.User) error
 	FindByID(id int) (*models.User, error)
 }

@@ -13,9 +13,8 @@ func TestSongRepository_Create(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	tstore, destructor, close := sqlstore.TestDB(t, config)
-	destructor("songs")
-	defer close()
+	tstore, destructor := sqlstore.TestDB(t, config, "songs")
+	defer destructor()
 	song := models.TestSong()
 	err = tstore.Song().Create(song)
 	if err != nil {
@@ -28,10 +27,8 @@ func TestSongRepository_FindByID(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	tstore, destructor, close := sqlstore.TestDB(t, config)
-	defer destructor("songs")
-	defer close()
-	destructor("songs")
+	tstore, destructor := sqlstore.TestDB(t, config, "songs")
+	defer destructor()
 	song := models.TestSong()
 	err = tstore.Song().Create(song)
 	if err != nil {

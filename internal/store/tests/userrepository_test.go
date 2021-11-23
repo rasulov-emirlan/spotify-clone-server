@@ -1,37 +1,41 @@
 package teststore
 
 import (
+	"spotify-clone/server/config"
 	"spotify-clone/server/internal/models"
+	"spotify-clone/server/internal/store/sqlstore"
 	"testing"
 )
 
 func TestUserRepository_Create(t *testing.T) {
-	tstore, destructor, close := New(t)
-	defer destructor("users")
-	destructor("users")
-	defer close()
-	user := models.TestUser()
-	_, err := tstore.User().Create(user)
+	config, err := config.NewTESTSQLDBconfig()
 	if err != nil {
 		t.Error(err)
+	}
+	tstore, destructor := sqlstore.TestDB(t, config, "users")
+	defer destructor()
+
+	user := models.TestUser()
+	err = tstore.User().Create(user)
+	if err != nil {
+		t.Error(err)
+		return
 	}
 }
 
 func TestUserRepository_FindByID(t *testing.T) {
-	tstore, destructor, close := New(t)
-	defer destructor("users")
-	destructor("users")
-	defer close()
+	config, err := config.NewTESTSQLDBconfig()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	tstore, destructor := sqlstore.TestDB(t, config, "users")
+	defer destructor()
+
 	user := models.TestUser()
-	id, err := tstore.User().Create(user)
+	user, err = tstore.User().FindByID(user.ID)
 	if err != nil {
 		t.Error(err)
-	}
-	user, err = tstore.User().FindByID(id)
-	if err != nil {
-		t.Error(err)
-	}
-	if user == nil {
-		t.Error("user is nil")
+		return
 	}
 }

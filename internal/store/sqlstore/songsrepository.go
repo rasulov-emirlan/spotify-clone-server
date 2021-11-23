@@ -31,16 +31,16 @@ func (r *SongRepository) FindByID(id int) (*models.Song, error) {
 		return nil, err
 	}
 
-	var result *models.Song
+	var result models.Song
 	if rows.Next() {
 		rows.Scan(
 			&result.ID,
 			&result.Title,
+			&result.Author.ID,
 			&result.URL,
 		)
 	}
-	result.Author.ID = id
-	return result, nil
+	return &result, nil
 }
 
 func (song *SongRepository) GetFromAtoB() {

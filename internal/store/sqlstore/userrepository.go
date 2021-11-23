@@ -9,18 +9,11 @@ type UserRepository struct {
 	db *sql.DB
 }
 
-func (r *UserRepository) Create(u *models.User) (int, error) {
-	row, err := r.db.Query(`
+func (r *UserRepository) Create(u *models.User) error {
+	return r.db.QueryRow(`
 	insert into users (name, password, email)
 	values($1, $2, $3) returning id;
-	`, u.Name, u.Password, u.Email)
-
-	var id int
-
-	if row.Next() {
-		row.Scan(&id)
-	}
-	return id, err
+	`, u.Name, u.Password, u.Email).Scan(&u.ID)
 }
 
 func (r *UserRepository) FindByID(id int) (*models.User, error) {
