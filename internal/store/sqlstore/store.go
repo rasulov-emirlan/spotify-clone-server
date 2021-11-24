@@ -8,9 +8,10 @@ import (
 )
 
 type Store struct {
-	db             *sql.DB
-	songRepository *SongRepository
-	userRepository *UserRepository
+	db                 *sql.DB
+	songRepository     *SongRepository
+	userRepository     *UserRepository
+	playlistRepository *PlaylistRepository
 }
 
 func New(config string) (*Store, error) {
@@ -33,10 +34,19 @@ func (s *Store) Song() store.SongRepository {
 }
 
 func (s *Store) User() store.UserRepository {
-	if s.songRepository != nil {
+	if s.userRepository != nil {
 		return s.userRepository
 	}
 	return &UserRepository{
+		db: s.db,
+	}
+}
+
+func (s *Store) Playlist() store.PlaylistRepository {
+	if s.playlistRepository != nil {
+		return s.playlistRepository
+	}
+	return &PlaylistRepository{
 		db: s.db,
 	}
 }

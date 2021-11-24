@@ -17,24 +17,13 @@ func (r *UserRepository) Create(u *models.User) error {
 }
 
 func (r *UserRepository) FindByID(id int) (*models.User, error) {
-	rows, err := r.db.Query(`
+	var u models.User
+	err := r.db.QueryRow(`
 	select id, name, email
 	from users
 	where id=$1;
-	`, id)
-	if err != nil {
-		return nil, err
-	}
-
-	var result *models.User
-	if rows.Next() {
-		rows.Scan(
-			&result.ID,
-			&result.Name,
-			&result.Email,
-		)
-	}
-	return result, nil
+	`, id).Scan(&u.ID, &u.Name, &u.Email)
+	return &u, err
 }
 
 func (r *UserRepository) BanByID(id int) error {

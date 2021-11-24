@@ -19,10 +19,16 @@ func TestUserRepository_Create(t *testing.T) {
 func TestUserRepository_FindByID(t *testing.T) {
 	tstore, destructor := NewTEST(t, "songs")
 	defer destructor()
-
 	user := models.TestUser()
-	user, err := tstore.User().FindByID(user.ID)
+	err := tstore.User().Create(user)
 	if err != nil {
 		t.Error(err)
+	}
+	user, err = tstore.User().FindByID(user.ID)
+	if err != nil {
+		t.Error(err)
+	}
+	if user == nil {
+		t.Error("user is null")
 	}
 }

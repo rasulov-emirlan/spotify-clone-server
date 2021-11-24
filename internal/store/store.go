@@ -7,13 +7,13 @@ import (
 type Store interface {
 	Song() SongRepository
 	User() UserRepository
+	Playlist() PlaylistRepository
 }
 
 type SongRepository interface {
 	Create(s *models.Song) error
 	FindByID(id int) (*models.Song, error)
 	// GetSongs(from int, to int) (*[]models.Song, error)
-	// // GetSongsFromPlaylist(playlist string) (*[]models.Song, error)
 	// DeleteByID(id int) error // new functionalaty
 }
 
@@ -24,5 +24,6 @@ type UserRepository interface {
 }
 
 type PlaylistRepository interface {
-	Create(u *models.Playlist) error
+	Create(p *models.Playlist) error
+	GetSongsFromPlaylist(id int) (*[]models.Song, error)
 }
