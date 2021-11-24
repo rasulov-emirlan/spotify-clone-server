@@ -15,7 +15,7 @@ func TestDB(t *testing.T, databaseURL string, table string) (store.Store, func()
 	if err := db.Ping(); err != nil {
 		t.Fatal(err)
 	}
-	db.Exec("TRUNCATE table %s;", table)
+	db.Exec("TRUNCATE table %s cascade;", table)
 	return &Store{
 			db:             db,
 			userRepository: &UserRepository{db: db},
