@@ -6,7 +6,7 @@ import (
 )
 
 func TestPlaylistsRepository_Create(t *testing.T) {
-	tstore, cleaner := NewTEST(t, "playlists")
+	tstore, cleaner := NewTEST(t)
 	defer cleaner()
 
 	playlist := models.TestPlaylist()

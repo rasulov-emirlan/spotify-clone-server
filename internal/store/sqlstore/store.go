@@ -19,6 +19,9 @@ func New(config string) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
 	return &Store{
 		db: db,
 	}, nil

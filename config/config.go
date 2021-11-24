@@ -70,7 +70,7 @@ func NewTESTSQLDBconfig() (string, error) {
 	conf.DBpassword = os.Getenv("DBPASSWORD")
 	conf.DBname = os.Getenv("TESTDBNAME")
 
-	result := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", conf.DBhost, conf.DBport, conf.DBuser, conf.DBpassword, conf.DBname)
+	result := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", conf.DBuser, conf.DBpassword, conf.DBhost, conf.DBport, conf.DBname)
 	log.Println(result)
 	return result, nil
 }

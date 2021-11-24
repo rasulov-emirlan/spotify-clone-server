@@ -6,7 +6,7 @@ import (
 )
 
 func TestSongRepository_Create(t *testing.T) {
-	tstore, destructor := NewTEST(t, "songs")
+	tstore, destructor := NewTEST(t)
 	defer destructor()
 
 	user := models.TestUser()
@@ -23,7 +23,7 @@ func TestSongRepository_Create(t *testing.T) {
 }
 
 func TestSongRepository_FindByID(t *testing.T) {
-	tstore, destructor := NewTEST(t, "songs")
+	tstore, destructor := NewTEST(t)
 	defer destructor()
 
 	song := models.TestSong()
