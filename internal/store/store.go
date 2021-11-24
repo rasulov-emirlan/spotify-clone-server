@@ -24,4 +24,5 @@ type UserRepository interface {
 }
 
 type PlaylistRepository interface {
+	Create(u *models.Playlist) error
 }

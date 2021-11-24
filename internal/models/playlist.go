@@ -6,4 +6,10 @@ type Playlist struct {
 	Author User   `json:"author"`
 }
 
-type Playlits []Playlist
+func TestPlaylist() *Playlist {
+	return &Playlist{
+		ID:     1,
+		Name:   "Lo-Fi",
+		Author: *TestUser(),
+	}
+}
