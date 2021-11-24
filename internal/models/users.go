@@ -9,6 +9,7 @@ type User struct {
 
 func TestUser() *User {
 	return &User{
+		ID:       1,
 		Name:     "John Doe",
 		Password: "123",
 		Email:    "johndoe@gmail.com",

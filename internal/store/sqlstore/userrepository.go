@@ -36,3 +36,7 @@ func (r *UserRepository) FindByID(id int) (*models.User, error) {
 	}
 	return result, nil
 }
+
+func (r *UserRepository) BanByID(id int) error {
+	return nil
+}

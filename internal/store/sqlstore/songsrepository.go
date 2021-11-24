@@ -43,6 +43,6 @@ func (r *SongRepository) FindByID(id int) (*models.Song, error) {
 	return &result, nil
 }
 
-func (song *SongRepository) GetFromAtoB() {
-
+func (song *SongRepository) DeleteByID(id int) error {
+	return nil
 }
