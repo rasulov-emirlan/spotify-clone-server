@@ -1,1 +1,0 @@
-drop table users_avatars;

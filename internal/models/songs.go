@@ -16,10 +16,7 @@ type Song struct {
 func TestSong() *Song {
 	return &Song{
 		Title: "Dancing Machine",
-		Author: User{
-			ID: 1,
-		},
-		URL: "youtube.com",
+		URL:   "youtube.com",
 	}
 }
 

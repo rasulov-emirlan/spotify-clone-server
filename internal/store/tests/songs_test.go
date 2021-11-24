@@ -9,8 +9,14 @@ func TestSongRepository_Create(t *testing.T) {
 	tstore, destructor := NewTEST(t, "songs")
 	defer destructor()
 
+	user := models.TestUser()
+	err := tstore.User().Create(user)
+	if err != nil {
+		t.Error(err)
+	}
 	song := models.TestSong()
-	err := tstore.Song().Create(song)
+	song.Author.ID = user.ID
+	err = tstore.Song().Create(song)
 	if err != nil {
 		t.Error(err)
 	}
