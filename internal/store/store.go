@@ -20,6 +20,7 @@ type SongRepository interface {
 type UserRepository interface {
 	Create(u *models.User) error
 	FindByID(id int) (*models.User, error)
+	FindByEmail(email string) (*models.User, error)
 	// BanByID(id int) error // new functionalaty
 }
 

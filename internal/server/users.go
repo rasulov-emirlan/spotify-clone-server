@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"spotify-clone/server/internal/models"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -50,10 +51,27 @@ func (s *Server) handleUserRegistration() echo.HandlerFunc {
 
 func (s *Server) handleUserLogin() echo.HandlerFunc {
 	type request struct {
-		Name     string `json:"name"`
+		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+	type response struct {
+		Token string `json:"token"`
+	}
 	return func(c echo.Context) error {
+		req := &request{}
+
+		if err := c.Bind(req); err != nil {
+			s.Error(http.StatusBadRequest, "could not parse json", err, c)
+			return err
+		}
+
+		token := jwt.New(jwt.SigningMethodHS256)
+
+		user, err := s.store.User().FindByEmail(req.Email)
+		if err != nil {
+			s.Error(http.StatusNonAuthoritativeInfo, "looks like you are not registered yet", err, c)
+			return err
+		}
 		return nil
 	}
 }

@@ -26,6 +26,15 @@ func (r *UserRepository) FindByID(id int) (*models.User, error) {
 	return &u, err
 }
 
+func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
+	var u models.User
+	err := r.db.QueryRow(`
+	select id, name, password, email
+	from users
+	where email = $1;
+	`, email).Scan(&u.ID, &u.Name, &u.Password, &u.Email)
+	return &u, err
+}
 func (r *UserRepository) BanByID(id int) error {
 	return nil
 }
