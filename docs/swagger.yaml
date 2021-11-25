@@ -1,0 +1,35 @@
+basePath: /
+consumes:
+- application/json
+host: localhost:8080
+info:
+  contact:
+    email: rasulov-emirlan@gmail.com
+    name: Rasulov Emirlan
+  description: This is a backend server for spotify clone.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Spotify Clone Server
+  version: "1.0"
+paths:
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+      summary: Show an account
+      tags:
+      - users
+swagger: "2.0"

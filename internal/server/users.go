@@ -7,6 +7,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// handleUserRegistration godoc
+// @Summary      Register user
+// @Description  Registers a new user and returns his token
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200  "json web token"
+// @Router       /users/{id} [get]
 func (s *Server) handleUserRegistration() echo.HandlerFunc {
 	type request struct {
 		Name     string `json:"name"`
