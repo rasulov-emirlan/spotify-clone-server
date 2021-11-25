@@ -57,17 +57,13 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 func (s *Server) plugRoutes() error {
 	s.router.Use(middleware.CORS())
-	// just for testing purposes
+
 	s.router.GET("/ping", func(c echo.Context) error {
 		return c.JSON(200, "pong")
 	})
-
-	// the main REST API
-
 	songs := s.router.Group("/songs")
 	{
 		songs.Use(middleware.JWT([]byte(s.jwtkey)))
-		// songs.Use(s.IsAllowedMiddleware)
 		songs.POST("/", s.handleSongsCreate())
 	}
 
@@ -76,10 +72,8 @@ func (s *Server) plugRoutes() error {
 		auth.POST("/register", s.handleUserRegistration())
 		auth.POST("/login", s.handleUserLogin())
 	}
-	// the main REST API
 
-	// this part serves our files withing ../database/ folder
-	s.router.Static("/static/", "../database/")
+	s.router.Static("/database/", "../database/")
 	return nil
 }
 

@@ -4,6 +4,8 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+
+	"github.com/gofrs/uuid"
 )
 
 type Song struct {
@@ -18,6 +20,15 @@ func TestSong() *Song {
 		Title: "Dancing Machine",
 		URL:   "youtube.com",
 	}
+}
+
+func (s *Song) UUIDurl(path string, extension string) error {
+	name, err := uuid.NewV1()
+	if err != nil {
+		return err
+	}
+	s.URL = path + name.String() + extension
+	return nil
 }
 
 func (s *Song) UploadSong(audiofile *multipart.FileHeader) error {

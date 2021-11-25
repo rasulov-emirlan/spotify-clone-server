@@ -1,11 +1,9 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"spotify-clone/server/internal/models"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 )
 
@@ -102,23 +100,5 @@ func (s *Server) handleUserLogin() echo.HandlerFunc {
 
 		c.JSON(http.StatusOK, response{Token: token})
 		return nil
-	}
-}
-
-func (s *Server) IsAllowedMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		token, err := jwt.Parse(c.Request().Header.Get("Token"), func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Token could not be decoded")
-			}
-			return []byte(s.jwtkey), nil
-
-		})
-		if err != nil {
-			s.Error(http.StatusBadRequest, "looks like you are not logged in", err, c)
-			return err
-		}
-		c.Set("user", token.Claims)
-		return next(c)
 	}
 }

@@ -31,8 +31,9 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 			Author: models.User{
 				ID: int(claims["userid"].(float64)), // this is syntax for type assertion of interfaces
 			},
-			URL: "database/audio/" + title + ".mp3",
 		}
+
+		song.UUIDurl("database/audio/", ".mp3")
 
 		if err := s.store.Song().Create(&song); err != nil {
 			s.Error(http.StatusInternalServerError, "unable to save info into database", err, c)
