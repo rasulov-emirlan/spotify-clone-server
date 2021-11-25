@@ -8,17 +8,23 @@ import (
 	"spotify-clone/server/internal/store/sqlstore"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type Server struct {
 	router *echo.Echo
 	store  store.Store
+	jwtkey string
 }
 
 // New() is our constructor for server
 // here we specify everything that needs to be done before staring the server
 func New() (*Server, error) {
 	dbconfig, err := config.NewSQLDBconfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	jwtkey, err := config.NewJWTToken()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,6 +36,7 @@ func New() (*Server, error) {
 	return &Server{
 		router: e,
 		store:  s,
+		jwtkey: jwtkey,
 	}, nil
 }
 
@@ -49,14 +56,26 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func (s *Server) plugRoutes() error {
+	s.router.Use(middleware.CORS())
 	// just for testing purposes
 	s.router.GET("/ping", func(c echo.Context) error {
 		return c.JSON(200, "pong")
 	})
 
 	// the main REST API
-	s.router.POST("/songs", s.handleSongsCreate())
-	s.router.POST("/users", s.handleUserRegistration())
+
+	songs := s.router.Group("/songs")
+	{
+		songs.Use(middleware.JWT([]byte(s.jwtkey)))
+		// songs.Use(s.IsAllowedMiddleware)
+		songs.POST("/", s.handleSongsCreate())
+	}
+
+	auth := s.router.Group("/auth")
+	{
+		auth.POST("/register", s.handleUserRegistration())
+		auth.POST("/login", s.handleUserLogin())
+	}
 	// the main REST API
 
 	// this part serves our files withing ../database/ folder
@@ -64,10 +83,10 @@ func (s *Server) plugRoutes() error {
 	return nil
 }
 
-type Response map[string]interface {
+type response map[string]interface {
 }
 
 func (s *Server) Error(code int, message string, err error, c echo.Context) {
-	c.JSON(code, Response{"message": message})
+	c.JSON(code, response{"message": message})
 	log.Println(message, err)
 }

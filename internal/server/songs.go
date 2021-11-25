@@ -5,18 +5,21 @@ import (
 	"spotify-clone/server/internal/models"
 	"strconv"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
 func (s *Server) handleSongsCreate() echo.HandlerFunc {
+	type request struct {
+		Auth bool   `json:"authorized"`
+		Name string `json:"name"`
+	}
 	return func(c echo.Context) error {
-		title := c.FormValue("title")
-		authorId, err := strconv.Atoi(c.FormValue("author_id"))
+		user := c.Get("user")
+		token := user.(*jwt.Token)
 
-		if err != nil {
-			s.Error(http.StatusBadRequest, "unable to read author_id", err, c)
-			return err
-		}
+		claims := token.Claims.(jwt.MapClaims)
+		title := c.FormValue("title")
 
 		audio, err := c.FormFile("audio")
 		if err != nil {
@@ -26,7 +29,7 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 		song := models.Song{
 			Title: title,
 			Author: models.User{
-				ID: authorId,
+				ID: int(claims["userid"].(float64)), // this is syntax for type assertion of interfaces
 			},
 			URL: "database/audio/" + title + ".mp3",
 		}

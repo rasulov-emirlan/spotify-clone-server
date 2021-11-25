@@ -35,6 +35,7 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	`, email).Scan(&u.ID, &u.Name, &u.Password, &u.Email)
 	return &u, err
 }
+
 func (r *UserRepository) BanByID(id int) error {
 	return nil
 }

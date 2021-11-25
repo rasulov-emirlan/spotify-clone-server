@@ -17,6 +17,15 @@ func NewPortForServer() (string, error) {
 	return port, nil
 }
 
+func NewJWTToken() (string, error) {
+	err := godotenv.Load(".dev.env")
+	if err != nil {
+		return "", err
+	}
+	key := os.Getenv("JWTKEY")
+	return key, nil
+}
+
 // NewSQLDBconfig: this function reads config data from ".env" file
 // and it reads it from the repository that you are executing the application
 func NewSQLDBconfig() (string, error) {
