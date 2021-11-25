@@ -38,7 +38,7 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 			},
 		}
 
-		song.UUIDurl("database/audio/", "database/covers/", ".mp3", ".png")
+		song.UUIDurl()
 
 		if err := s.store.Song().Create(&song); err != nil {
 			s.Error(http.StatusInternalServerError, "unable to save info into database", err, c)

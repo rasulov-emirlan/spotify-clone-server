@@ -24,13 +24,13 @@ func TestSong() *Song {
 	}
 }
 
-func (s *Song) UUIDurl(audiopath, imagepath, audioext, imageext string) error {
+func (s *Song) UUIDurl() error {
 	name, err := uuid.NewV1()
 	if err != nil {
 		return err
 	}
-	s.URL = audiopath + name.String() + audioext
-	s.CoverURL = imagepath + name.String() + imageext
+	s.URL = "database/audio" + name.String() + ".mp3"
+	s.CoverURL = "database/covers" + name.String() + ".png"
 	return nil
 }
 
@@ -53,7 +53,7 @@ func (s *Song) UploadSong(audiofile, imagefile *multipart.FileHeader) error {
 	}
 	defer coversrc.Close()
 
-	coversdst, err := os.Create("../" + s.URL)
+	coversdst, err := os.Create("../" + s.CoverURL)
 	if err != nil {
 		return err
 	}
