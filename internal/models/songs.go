@@ -29,8 +29,8 @@ func (s *Song) UUIDurl() error {
 	if err != nil {
 		return err
 	}
-	s.URL = "database/audio" + name.String() + ".mp3"
-	s.CoverURL = "database/covers" + name.String() + ".png"
+	s.URL = "database/audio/" + name.String() + ".mp3"
+	s.CoverURL = "database/covers/" + name.String() + ".png"
 	return nil
 }
 

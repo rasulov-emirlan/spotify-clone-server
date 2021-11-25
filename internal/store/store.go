@@ -26,5 +26,7 @@ type UserRepository interface {
 
 type PlaylistRepository interface {
 	Create(p *models.Playlist) error
+	UsersPlaylists(userID int) ([]models.Playlist, error)
+	AddSong(songID int, playlistID int) error
 	GetSongsFromPlaylist(id int) (*[]models.Song, error)
 }

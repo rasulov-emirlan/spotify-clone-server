@@ -67,6 +67,14 @@ func (s *Server) plugRoutes() error {
 		songs.POST("/", s.handleSongsCreate())
 	}
 
+	playlists := s.router.Group("/playlists")
+	{
+		playlists.Use(middleware.JWT([]byte(s.jwtkey)))
+		playlists.POST("/", s.handlePlaylistsCreate())
+		playlists.GET("/:playlist_id", s.handlePlaylistsGetSongsFromPlaylist())
+		playlists.PATCH("", s.handlePlaylistsAddSong())
+	}
+
 	auth := s.router.Group("/auth")
 	{
 		auth.POST("/register", s.handleUserRegistration())
