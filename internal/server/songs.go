@@ -26,6 +26,11 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 			s.Error(http.StatusBadRequest, "unable to read audio file", err, c)
 			return err
 		}
+		cover, err := c.FormFile("cover")
+		if err != nil {
+			s.Error(http.StatusBadRequest, "unable to read image file", err, c)
+			return err
+		}
 		song := models.Song{
 			Title: title,
 			Author: models.User{
@@ -33,14 +38,14 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 			},
 		}
 
-		song.UUIDurl("database/audio/", ".mp3")
+		song.UUIDurl("database/audio/", "database/covers/", ".mp3", ".png")
 
 		if err := s.store.Song().Create(&song); err != nil {
 			s.Error(http.StatusInternalServerError, "unable to save info into database", err, c)
 			return err
 		}
 
-		if err := song.UploadSong(audio); err != nil {
+		if err := song.UploadSong(audio, cover); err != nil {
 			s.Error(http.StatusInternalServerError, "unable to save audio file into database", err, c)
 			return err
 		}

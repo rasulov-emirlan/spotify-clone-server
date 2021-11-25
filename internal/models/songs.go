@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"io"
 	"mime/multipart"
 	"os"
@@ -9,10 +10,11 @@ import (
 )
 
 type Song struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Author User   `json:"author"`
-	URL    string `json:"url"`
+	ID       int    `json:"id"`
+	Title    string `json:"title"`
+	Author   User   `json:"author"`
+	URL      string `json:"url"`
+	CoverURL string `json:"cover_url"`
 }
 
 func TestSong() *Song {
@@ -22,29 +24,59 @@ func TestSong() *Song {
 	}
 }
 
-func (s *Song) UUIDurl(path string, extension string) error {
+func (s *Song) UUIDurl(audiopath, imagepath, audioext, imageext string) error {
 	name, err := uuid.NewV1()
 	if err != nil {
 		return err
 	}
-	s.URL = path + name.String() + extension
+	s.URL = audiopath + name.String() + audioext
+	s.CoverURL = imagepath + name.String() + imageext
 	return nil
 }
 
-func (s *Song) UploadSong(audiofile *multipart.FileHeader) error {
-	src, err := audiofile.Open()
+var (
+	wrongfiletype = errors.New("we do not support this type of file")
+)
+
+func (s *Song) UploadSong(audiofile, imagefile *multipart.FileHeader) error {
+
+	if imagefile.Header["Content-Type"][0] != "image/png" {
+		return wrongfiletype
+	}
+	if audiofile.Header["Content-Type"][0] != "audio/mpeg" && audiofile.Header["Content-Type"][0] != "audio/mp3" {
+		return wrongfiletype
+	}
+	// here is logic for saving covers for songs
+	coversrc, err := imagefile.Open()
 	if err != nil {
 		return err
 	}
-	defer src.Close()
+	defer coversrc.Close()
 
-	dst, err := os.Create("../" + s.URL)
+	coversdst, err := os.Create("../" + s.URL)
 	if err != nil {
 		return err
 	}
-	defer dst.Close()
+	defer coversdst.Close()
 
-	if _, err := io.Copy(dst, src); err != nil {
+	if _, err := io.Copy(coversdst, coversrc); err != nil {
+		return err
+	}
+
+	// here is logic for audio file itself
+	audiosrc, err := audiofile.Open()
+	if err != nil {
+		return err
+	}
+	defer audiosrc.Close()
+
+	audiodst, err := os.Create("../" + s.URL)
+	if err != nil {
+		return err
+	}
+	defer audiodst.Close()
+
+	if _, err := io.Copy(audiodst, audiosrc); err != nil {
 		return err
 	}
 	return nil
