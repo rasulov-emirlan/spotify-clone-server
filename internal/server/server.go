@@ -82,7 +82,7 @@ func (s *Server) plugRoutes() error {
 	songs := s.router.Group("/songs")
 	{
 		songs.Use(middleware.JWT([]byte(s.jwtkey)))
-		songs.POST("/", s.handleSongsCreate())
+		songs.POST("", s.handleSongsCreate())
 	}
 
 	playlists := s.router.Group("/playlists")

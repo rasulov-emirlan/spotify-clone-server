@@ -9,10 +9,10 @@ import (
 )
 
 type User struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"-"`
-	Email    string `json:"-"`
+	ID       int    `json:"id" example:"0"`
+	Name     string `json:"name" example:"John Doe"`
+	Password string `json:"-" example:"QWERTY123"`
+	Email    string `json:"-" example:"john@gmail.com"`
 }
 
 func TestUser() *User {

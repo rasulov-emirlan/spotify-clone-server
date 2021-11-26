@@ -1,6 +1,24 @@
 basePath: /
 consumes:
 - application/json
+definitions:
+  server.authRequest:
+    properties:
+      email:
+        example: john@gmai.com
+        type: string
+      name:
+        example: Johny Cash
+        type: string
+      password:
+        example: "123456"
+        type: string
+    type: object
+  server.authResponse:
+    properties:
+      token:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -12,5 +30,80 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Spotify Clone Server
   version: "1.0"
-paths: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Returns a json web token if user is registered in database and
+        enters correct data
+      parameters:
+      - description: Authorization request
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/server.authRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: json web token
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user and returns his token
+      parameters:
+      - description: Authorization request
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/server.authRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: json web token
+      summary: Register user
+      tags:
+      - auth
+  /songs:
+    post:
+      consumes:
+      - application/json
+      description: Uploads a song and its cover with all the info about that song
+      parameters:
+      - description: JWToken for auth
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The actual audiofile
+        in: formData
+        name: audio
+        required: true
+        type: file
+      - description: The cover for the song
+        in: formData
+        name: cover
+        required: true
+        type: file
+      - description: The title for that song
+        in: formData
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we uploaded your song
+      summary: Upload a song
+      tags:
+      - songs
 swagger: "2.0"

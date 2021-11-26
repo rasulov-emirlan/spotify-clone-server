@@ -7,28 +7,28 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type authRequest struct {
+	Name     string `json:"name" example:"Johny Cash"`
+	Email    string `json:"email" example:"john@gmai.com"`
+	Password string `json:"password" example:"123456"`
+}
+
+type authResponse struct {
+	Token string `json:"token"`
+}
+
+// @Summary      Register user
+// @Description  Registers a new user and returns his token
+// @Tags         auth
+// @Accept	     json
+// @Param		 param  body        authRequest     true "Authorization request"
+// @Success		 200 	{object}	authResponse
+// @Produce      json
+// @Success      200  "json web token"
+// @Router       /auth/register [post]
 func (s *Server) handleUserRegistration() echo.HandlerFunc {
-	type request struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-
-	type response struct {
-		Token string `json:"token"`
-	}
-
-	// @Summary      Register user
-	// @Description  Registers a new user and returns his token
-	// @Tags         auth
-	// @Accept	     json
-	// @Param		 param  body        request     true "Authorization request"
-	// @Success		 200 	{object}	response
-	// @Produce      json
-	// @Success      200  "json web token"
-	// @Router       /auth/register/ [post]
 	return func(c echo.Context) error {
-		req := &request{}
+		req := &authRequest{}
 
 		if err := c.Bind(req); err != nil {
 			s.Error(http.StatusBadRequest, "could not decode json", err, c)
@@ -68,22 +68,24 @@ func (s *Server) handleUserRegistration() echo.HandlerFunc {
 			return err
 		}
 
-		c.JSON(http.StatusOK, response{Token: token})
+		c.JSON(http.StatusOK, authResponse{Token: token})
 		return nil
 	}
 }
 
+// handleUserLogin godoc
+// @Summary      Login user
+// @Description  Returns a json web token if user is registered in database and enters correct data
+// @Tags         auth
+// @Accept	     json
+// @Param		 param  body        authRequest     true "Authorization request"
+// @Success		 200 	{object}	authResponse
+// @Produce      json
+// @Success      200  "json web token"
+// @Router       /auth/login [post]
 func (s *Server) handleUserLogin() echo.HandlerFunc {
-	type request struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-	type response struct {
-		Token string `json:"token"`
-	}
 	return func(c echo.Context) error {
-		req := &request{}
+		req := &authRequest{}
 
 		if err := c.Bind(req); err != nil {
 			s.Error(http.StatusBadRequest, "could not parse json", err, c)
@@ -107,7 +109,7 @@ func (s *Server) handleUserLogin() echo.HandlerFunc {
 			return err
 		}
 
-		c.JSON(http.StatusOK, response{Token: token})
+		c.JSON(http.StatusOK, authResponse{Token: token})
 		return nil
 	}
 }

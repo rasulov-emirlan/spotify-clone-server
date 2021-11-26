@@ -9,11 +9,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type songRequest struct {
+	Title string `json:""`
+}
+
+// ProfileUpload docs
+// @Tags		songs
+// @Summary		Upload a song
+// @Description	Uploads a song and its cover with all the info about that song
+// @Accept		json
+// @Produce		json
+// @Param		Authorization	header		string			true	"JWToken for auth"
+// @Param		audio			formData	file			true    "The actual audiofile"
+// @Param		cover			formData	file			true    "The cover for the song"
+// @Param		title			formData	string			true    "The title for that song"
+// @Success		200 	"we uploaded your song"
+// @Router		/songs	[post]
 func (s *Server) handleSongsCreate() echo.HandlerFunc {
-	type request struct {
-		Auth bool   `json:"authorized"`
-		Name string `json:"name"`
-	}
 	return func(c echo.Context) error {
 		user := c.Get("user")
 		token := user.(*jwt.Token)
