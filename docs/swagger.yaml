@@ -12,24 +12,5 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Spotify Clone Server
   version: "1.0"
-paths:
-  /users/{id}:
-    get:
-      consumes:
-      - application/json
-      description: get string by ID
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: token
-      summary: Show an account
-      tags:
-      - users
+paths: {}
 swagger: "2.0"

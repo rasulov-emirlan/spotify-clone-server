@@ -12,6 +12,7 @@ type Store struct {
 	songRepository     *SongRepository
 	userRepository     *UserRepository
 	playlistRepository *PlaylistRepository
+	genreRepository    *GenreRepository
 }
 
 func New(config string) (*Store, error) {
@@ -50,6 +51,15 @@ func (s *Store) Playlist() store.PlaylistRepository {
 		return s.playlistRepository
 	}
 	return &PlaylistRepository{
+		db: s.db,
+	}
+}
+
+func (s *Store) Genre() store.GenresRepository {
+	if s.genreRepository != nil {
+		return s.genreRepository
+	}
+	return &GenreRepository{
 		db: s.db,
 	}
 }

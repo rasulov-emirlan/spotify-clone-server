@@ -80,3 +80,18 @@ func (s *Server) handleSongsFindByID() echo.HandlerFunc {
 		return nil
 	}
 }
+
+// be carefull with this function
+// if database is medium size this can slow down the whole server
+func (s *Server) handleGetAllSongs() echo.HandlerFunc {
+	type song struct {
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		AuthorID int    `json:"author_id"`
+		URL      string `json:""`
+	}
+	return func(c echo.Context) error {
+
+		return nil
+	}
+}

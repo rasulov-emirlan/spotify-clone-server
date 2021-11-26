@@ -8,6 +8,7 @@ type Store interface {
 	Song() SongRepository
 	User() UserRepository
 	Playlist() PlaylistRepository
+	Genre() GenresRepository
 }
 
 type SongRepository interface {
@@ -29,4 +30,10 @@ type PlaylistRepository interface {
 	UsersPlaylists(userID int) ([]models.Playlist, error)
 	AddSong(songID int, playlistID int) error
 	GetSongsFromPlaylist(id int) (*[]models.Song, error)
+}
+
+type GenresRepository interface {
+	Create(g *models.Genre) error
+	AddSong(songID, genreID int) error
+	GetSongs(genderID int) ([]models.Song, error)
 }
