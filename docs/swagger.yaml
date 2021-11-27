@@ -84,6 +84,20 @@ paths:
       tags:
       - auth
   /genres:
+    get:
+      consumes:
+      - application/json
+      description: Lists all the genres in our database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      summary: List genres
+      tags:
+      - genres
     post:
       consumes:
       - application/json
@@ -146,6 +160,20 @@ paths:
       tags:
       - genres
   /playlists:
+    get:
+      consumes:
+      - application/json
+      description: Lists all the playlists in our database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      summary: List playlists
+      tags:
+      - playlists
     post:
       consumes:
       - application/json

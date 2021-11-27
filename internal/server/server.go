@@ -90,6 +90,7 @@ func (s *Server) plugRoutes() error {
 	playlists := s.Router.Group("/playlists")
 	{
 		playlists.POST("", handlers.PlaylistsCreate(s.Store), middleware.JWT([]byte(s.JWTkey)))
+		playlists.GET("", handlers.ListAllPlaylists(s.Store))
 		playlists.GET("/:id", handlers.GetSongsFromPlaylist(s.Store))
 		playlists.PUT("", handlers.PlaylistsAddSong(s.Store), middleware.JWT([]byte(s.JWTkey)))
 	}
@@ -98,6 +99,7 @@ func (s *Server) plugRoutes() error {
 	{
 		genres.POST("/", handlers.GenresCreate(s.Store))
 		genres.PUT("", handlers.GenresAddSong(s.Store))
+		genres.GET("", handlers.ListAllGenres(s.Store))
 		genres.GET("/:genre", handlers.GenresSongs(s.Store))
 	}
 

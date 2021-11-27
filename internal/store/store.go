@@ -27,6 +27,7 @@ type UserRepository interface {
 
 type PlaylistRepository interface {
 	Create(p *models.Playlist) error
+	ListAll() ([]models.Playlist, error)
 	UsersPlaylists(userID int) ([]models.Playlist, error)
 	AddSong(songID int, playlistID int) error
 	GetSongsFromPlaylist(id int) (*[]models.Song, error)
@@ -34,6 +35,7 @@ type PlaylistRepository interface {
 
 type GenresRepository interface {
 	Create(g *models.Genre) error
+	ListAll() ([]models.Genre, error)
 	AddSong(songID, genreID int) error
 	GetSongs(genderID int) ([]models.Song, error)
 }

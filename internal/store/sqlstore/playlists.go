@@ -63,6 +63,43 @@ func (r *PlaylistRepository) AddSong(songID int, playlistID int) error {
 	`, songID, playlistID).Err()
 }
 
+func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
+	rows, err := r.db.Query(`
+	SELECT p.id, p.name, p.user_id, u.name as username
+	FROM playlists as p
+	INNER JOIN users as u
+	ON p.user_id = u.id
+	;
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var playlists []models.Playlist
+	var id, userID int
+	var name, username string
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&id,
+			&name,
+			&userID,
+			&username,
+		); err != nil {
+			return nil, err
+		}
+		playlists = append(playlists, models.Playlist{
+			ID:   id,
+			Name: name,
+			Author: models.User{
+				ID:   id,
+				Name: username,
+			},
+		})
+	}
+	return playlists, nil
+}
 func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Song, error) {
 	rows, err := r.db.Query(`
 	SELECT s.id, s.title, s.author_id, s.url, sc.url as cover_url, u.name as username

@@ -96,6 +96,27 @@ var doc = `{
             }
         },
         "/genres": {
+            "get": {
+                "description": "Lists all the genres in our database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "List genres",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "body"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Adds a song to a genre",
                 "consumes": [
@@ -190,6 +211,27 @@ var doc = `{
             }
         },
         "/playlists": {
+            "get": {
+                "description": "Lists all the playlists in our database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlists"
+                ],
+                "summary": "List playlists",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "body"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Adds a song to whatever playlist you want to. But it has to be your playlist that you created",
                 "consumes": [

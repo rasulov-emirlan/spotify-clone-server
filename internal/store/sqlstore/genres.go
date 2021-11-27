@@ -68,3 +68,32 @@ func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 
 	return songs, nil
 }
+
+func (r *GenreRepository) ListAll() ([]models.Genre, error) {
+	rows, err := r.db.Query(`
+	SELECT id, name
+	FROM genres;
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var genres []models.Genre
+	var id int
+	var name string
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&id,
+			&name,
+		); err != nil {
+			return nil, err
+		}
+		genres = append(genres, models.Genre{
+			ID:   id,
+			Name: name,
+		})
+	}
+	return genres, nil
+}

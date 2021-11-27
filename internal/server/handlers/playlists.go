@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
@@ -107,6 +108,30 @@ func PlaylistsAddSong(store store.Store) echo.HandlerFunc {
 
 		throwError(http.StatusBadRequest, "we dont know what went wrong", err, c)
 		return err
+	}
+}
+
+// ListAllPlaylists docs
+// @Tags		playlists
+// @Summary		List playlists
+// @Description	Lists all the playlists in our database
+// @Accept		json
+// @Produce		json
+// @Success		200 	body {object} []models.Playlist
+// @Router		/playlists	[get]
+func ListAllPlaylists(store store.Store) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		playlists, err := store.Playlist().ListAll()
+		if err != nil {
+			throwError(http.StatusInternalServerError, "database error", err, c)
+			return err
+		}
+		log.Println(playlists)
+		return c.JSON(http.StatusOK, responseMessage{
+			Code: http.StatusOK,
+			Data: playlists,
+		})
+		return nil
 	}
 }
 
