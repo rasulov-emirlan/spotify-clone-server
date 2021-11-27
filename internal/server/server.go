@@ -71,6 +71,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func (s *Server) plugRoutes() error {
+	s.router.Pre(middleware.AddTrailingSlash())
 	s.router.Use(middleware.CORS())
 	s.router.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
