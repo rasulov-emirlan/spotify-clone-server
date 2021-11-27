@@ -14,7 +14,7 @@ type Store interface {
 type SongRepository interface {
 	Create(s *models.Song) error
 	FindByID(id int) (*models.Song, error)
-	// GetSongs(from int, to int) (*[]models.Song, error)
+	GetSongs(from int, to int) ([]models.Song, error)
 	// DeleteByID(id int) error // new functionalaty
 }
 

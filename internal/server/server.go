@@ -83,8 +83,8 @@ func (s *Server) plugRoutes() error {
 	})
 	songs := s.Router.Group("/songs")
 	{
-		songs.Use(middleware.JWT([]byte(s.JWTkey)))
-		songs.POST("", handlers.SongsCreate(s.Store))
+		songs.POST("", handlers.SongsCreate(s.Store), middleware.JWT([]byte(s.JWTkey)))
+		songs.GET("", handlers.SongsFromAtoB(s.Store))
 	}
 
 	playlists := s.Router.Group("/playlists")

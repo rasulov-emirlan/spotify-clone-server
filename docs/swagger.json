@@ -326,6 +326,40 @@
             }
         },
         "/songs": {
+            "get": {
+                "description": "Returns songs from some id to some id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "songs"
+                ],
+                "summary": "Get songs",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "from which id to start",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "at which id to end",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "here your songs"
+                    }
+                }
+            },
             "post": {
                 "description": "Uploads a song and its cover with all the info about that song",
                 "consumes": [

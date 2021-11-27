@@ -67,6 +67,41 @@ func SongsCreate(store store.Store) echo.HandlerFunc {
 	}
 }
 
+// SongsFromAtoB docs
+// @Tags		songs
+// @Summary		Get songs
+// @Description	Returns songs from some id to some id
+// @Accept		json
+// @Produce		json
+// @Param		from			query	int			true    "from which id to start"
+// @Param		to			query	int			true    "at which id to end"
+// @Success		200 	"here your songs"
+// @Router		/songs	[get]
+func SongsFromAtoB(store store.Store) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		from, err := strconv.Atoi(c.QueryParam("from"))
+		if err != nil {
+			throwError(http.StatusBadRequest, "did not like path params", err, c)
+			return err
+		}
+		to, err := strconv.Atoi(c.QueryParam("to"))
+		if err != nil {
+			throwError(http.StatusBadRequest, "did not like path params", err, c)
+			return err
+		}
+
+		songs, err := store.Song().GetSongs(from, to)
+		if err != nil {
+			throwError(http.StatusBadRequest, "did not like path params", err, c)
+			return err
+		}
+		return c.JSON(http.StatusOK, responseMessage{
+			Code: http.StatusOK,
+			Data: songs,
+		})
+	}
+}
+
 func SongsFindByID(store store.Store) echo.HandlerFunc {
 	type response struct {
 		Title      string `json:"title"`

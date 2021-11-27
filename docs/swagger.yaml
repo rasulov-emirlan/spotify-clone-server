@@ -248,6 +248,29 @@ paths:
       tags:
       - playlists
   /songs:
+    get:
+      consumes:
+      - application/json
+      description: Returns songs from some id to some id
+      parameters:
+      - description: from which id to start
+        in: query
+        name: from
+        required: true
+        type: integer
+      - description: at which id to end
+        in: query
+        name: to
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: here your songs
+      summary: Get songs
+      tags:
+      - songs
     post:
       consumes:
       - application/json
