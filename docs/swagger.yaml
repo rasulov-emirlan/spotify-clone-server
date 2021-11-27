@@ -149,7 +149,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Uploads a song and its cover with all the info about that song
+      description: Creates a new playlist that can be accesed by anyone but only you
+        can edit it
       parameters:
       - description: JWToken for auth
         in: header
@@ -167,7 +168,7 @@ paths:
       responses:
         "200":
           description: we created your playlist
-      summary: Upload a song
+      summary: Create a playlist
       tags:
       - playlists
     put:

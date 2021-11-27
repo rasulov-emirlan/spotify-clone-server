@@ -18,8 +18,8 @@ type playlistCreateResponse struct {
 
 // handlePlaylistsCreate docs
 // @Tags		playlists
-// @Summary		Upload a song
-// @Description	Uploads a song and its cover with all the info about that song
+// @Summary		Create a playlist
+// @Description	Creates a new playlist that can be accesed by anyone but only you can edit it
 // @Accept		json
 // @Produce		json
 // @Param		Authorization	header		string			true	"JWToken for auth"

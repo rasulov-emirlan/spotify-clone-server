@@ -232,7 +232,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Uploads a song and its cover with all the info about that song",
+                "description": "Creates a new playlist that can be accesed by anyone but only you can edit it",
                 "consumes": [
                     "application/json"
                 ],
@@ -242,7 +242,7 @@ var doc = `{
                 "tags": [
                     "playlists"
                 ],
-                "summary": "Upload a song",
+                "summary": "Create a playlist",
                 "parameters": [
                     {
                         "type": "string",
