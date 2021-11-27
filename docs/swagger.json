@@ -39,7 +39,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.authRequest"
+                            "$ref": "#/definitions/handlers.authRequest"
                         }
                     }
                 ],
@@ -70,7 +70,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.authRequest"
+                            "$ref": "#/definitions/handlers.authRequest"
                         }
                     }
                 ],
@@ -81,7 +81,7 @@
                 }
             }
         },
-        "/gnres": {
+        "/genres": {
             "put": {
                 "description": "Adds a song to a genre",
                 "consumes": [
@@ -135,7 +135,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.genresCreateRequest"
+                            "$ref": "#/definitions/handlers.genresCreateRequest"
                         }
                     }
                 ],
@@ -146,7 +146,7 @@
                 }
             }
         },
-        "/gnres/{genre}": {
+        "/genres/{genre}": {
             "get": {
                 "description": "Adds a song to a genre",
                 "consumes": [
@@ -243,7 +243,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.playlistCreateRequest"
+                            "$ref": "#/definitions/handlers.playlistCreateRequest"
                         }
                     }
                 ],
@@ -335,7 +335,7 @@
         }
     },
     "definitions": {
-        "server.authRequest": {
+        "handlers.authRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -352,7 +352,7 @@
                 }
             }
         },
-        "server.authResponse": {
+        "handlers.authResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -360,7 +360,7 @@
                 }
             }
         },
-        "server.genresCreateRequest": {
+        "handlers.genresCreateRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -368,7 +368,7 @@
                 }
             }
         },
-        "server.playlistCreateRequest": {
+        "handlers.playlistCreateRequest": {
             "type": "object",
             "properties": {
                 "name": {

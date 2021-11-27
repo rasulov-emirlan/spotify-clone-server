@@ -1,8 +1,9 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"spotify-clone/server/internal/models"
+	"spotify-clone/server/internal/store"
 
 	"github.com/labstack/echo/v4"
 )
@@ -26,12 +27,12 @@ type authResponse struct {
 // @Produce      json
 // @Success      200  "json web token"
 // @Router       /auth/register [post]
-func (s *Server) handleUserRegistration() echo.HandlerFunc {
+func UserRegistration(store store.Store, JWTkey string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &authRequest{}
 
 		if err := c.Bind(req); err != nil {
-			s.Error(http.StatusBadRequest, "could not decode json", err, c)
+			throwError(http.StatusBadRequest, "could not decode json", err, c)
 			return err
 		}
 
@@ -42,29 +43,29 @@ func (s *Server) handleUserRegistration() echo.HandlerFunc {
 		}
 
 		if err := user.BeforeCreate(); err != nil {
-			s.Error(http.StatusBadRequest, "could not decode json 😥", err, c)
+			throwError(http.StatusBadRequest, "could not decode json 😥", err, c)
 			return err
 		}
 
-		if err := s.store.User().Create(user); err != nil {
-			s.Error(http.StatusBadRequest, "looks like our database did not like this user info 😥", err, c)
+		if err := store.User().Create(user); err != nil {
+			throwError(http.StatusBadRequest, "looks like our database did not like this user info 😥", err, c)
 			return err
 		}
 
-		user, err := s.store.User().FindByEmail(req.Email)
+		user, err := store.User().FindByEmail(req.Email)
 		if err != nil {
-			s.Error(http.StatusNonAuthoritativeInfo, "looks like you are not registered yet 😠", err, c)
+			throwError(http.StatusNonAuthoritativeInfo, "looks like you are not registered yet 😠", err, c)
 			return err
 		}
 
 		if err := user.ComparePasswords(req.Password); err != nil {
-			s.Error(http.StatusNonAuthoritativeInfo, "wrong password bozo! 😠", err, c)
+			throwError(http.StatusNonAuthoritativeInfo, "wrong password bozo! 😠", err, c)
 			return err
 		}
 
-		token, err := user.GenerateJWT(s.jwtkey)
+		token, err := user.GenerateJWT(JWTkey)
 		if err != nil {
-			s.Error(http.StatusNonAuthoritativeInfo, "could not generate a token 😭", err, c)
+			throwError(http.StatusNonAuthoritativeInfo, "could not generate a token 😭", err, c)
 			return err
 		}
 
@@ -73,7 +74,7 @@ func (s *Server) handleUserRegistration() echo.HandlerFunc {
 	}
 }
 
-// handleUserLogin godoc
+// UserLogin godoc
 // @Summary      Login user
 // @Description  Returns a json web token if user is registered in database and enters correct data
 // @Tags         auth
@@ -83,29 +84,29 @@ func (s *Server) handleUserRegistration() echo.HandlerFunc {
 // @Produce      json
 // @Success      200  "json web token"
 // @Router       /auth/login [post]
-func (s *Server) handleUserLogin() echo.HandlerFunc {
+func UserLogin(store store.Store, JWTkey string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &authRequest{}
 
 		if err := c.Bind(req); err != nil {
-			s.Error(http.StatusBadRequest, "could not parse json", err, c)
+			throwError(http.StatusBadRequest, "could not parse json", err, c)
 			return err
 		}
 
-		user, err := s.store.User().FindByEmail(req.Email)
+		user, err := store.User().FindByEmail(req.Email)
 		if err != nil {
-			s.Error(http.StatusNonAuthoritativeInfo, "looks like you are not registered yet 😠", err, c)
+			throwError(http.StatusNonAuthoritativeInfo, "looks like you are not registered yet 😠", err, c)
 			return err
 		}
 
 		if err := user.ComparePasswords(req.Password); err != nil {
-			s.Error(http.StatusNonAuthoritativeInfo, "wrong password bozo! 😠", err, c)
+			throwError(http.StatusNonAuthoritativeInfo, "wrong password bozo! 😠", err, c)
 			return err
 		}
 
-		token, err := user.GenerateJWT(s.jwtkey)
+		token, err := user.GenerateJWT(JWTkey)
 		if err != nil {
-			s.Error(http.StatusNonAuthoritativeInfo, "could not generate a token 😭", err, c)
+			throwError(http.StatusNonAuthoritativeInfo, "could not generate a token 😭", err, c)
 			return err
 		}
 

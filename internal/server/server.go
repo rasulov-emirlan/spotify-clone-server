@@ -5,6 +5,7 @@ import (
 	"log"
 	"spotify-clone/server/config"
 	_ "spotify-clone/server/docs"
+	"spotify-clone/server/internal/server/handlers"
 	"spotify-clone/server/internal/store"
 	"spotify-clone/server/internal/store/sqlstore"
 
@@ -27,9 +28,9 @@ import (
 // @BasePath /
 // @Accept json
 type Server struct {
-	router *echo.Echo
-	store  store.Store
-	jwtkey string
+	Router *echo.Echo
+	Store  store.Store
+	JWTkey string
 }
 
 // New() is our constructor for server
@@ -49,9 +50,9 @@ func New() (*Server, error) {
 	}
 	e := echo.New()
 	return &Server{
-		router: e,
-		store:  s,
-		jwtkey: jwtkey,
+		Router: e,
+		Store:  s,
+		JWTkey: jwtkey,
 	}, nil
 }
 
@@ -59,7 +60,7 @@ func (s *Server) Start(port string) error {
 	if err := s.plugRoutes(); err != nil {
 		return err
 	}
-	if err := s.router.Start(":" + port); err != nil {
+	if err := s.Router.Start(":" + port); err != nil {
 		return err
 	}
 
@@ -67,46 +68,46 @@ func (s *Server) Start(port string) error {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	return s.router.Shutdown(ctx)
+	return s.Router.Shutdown(ctx)
 }
 
 func (s *Server) plugRoutes() error {
-	s.router.Pre(middleware.AddTrailingSlash())
-	s.router.Use(middleware.CORS())
-	s.router.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+	s.Router.Pre(middleware.RemoveTrailingSlash())
+	s.Router.Use(middleware.CORS())
+	s.Router.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
 	}))
 
-	s.router.GET("/ping", func(c echo.Context) error {
+	s.Router.GET("/ping", func(c echo.Context) error {
 		return c.JSON(200, "pong")
 	})
-	songs := s.router.Group("/songs")
+	songs := s.Router.Group("/songs")
 	{
-		songs.Use(middleware.JWT([]byte(s.jwtkey)))
-		songs.POST("", s.handleSongsCreate())
+		songs.Use(middleware.JWT([]byte(s.JWTkey)))
+		songs.POST("", handlers.SongsCreate(s.Store))
 	}
 
-	playlists := s.router.Group("/playlists")
+	playlists := s.Router.Group("/playlists")
 	{
-		playlists.POST("", s.handlePlaylistsCreate(), middleware.JWT([]byte(s.jwtkey)))
-		playlists.GET("/:playlist_id", s.handlePlaylistsGetSongsFromPlaylist())
-		playlists.PUT("", s.handlePlaylistsAddSong(), middleware.JWT([]byte(s.jwtkey)))
+		playlists.POST("", handlers.PlaylistsCreate(s.Store), middleware.JWT([]byte(s.JWTkey)))
+		playlists.GET("/:id", handlers.GetSongsFromPlaylist(s.Store))
+		playlists.PUT("", handlers.PlaylistsAddSong(s.Store), middleware.JWT([]byte(s.JWTkey)))
 	}
 
-	genres := s.router.Group("/genres")
+	genres := s.Router.Group("/genres")
 	{
-		genres.POST("/", s.handleGenresCreate())
-		genres.PUT("", s.handleGenresAddSong())
-		genres.GET("/:genre", s.handleGenresSongs())
+		genres.POST("/", handlers.GenresCreate(s.Store))
+		genres.PUT("", handlers.GenresAddSong(s.Store))
+		genres.GET("/:genre", handlers.GenresSongs(s.Store))
 	}
 
-	auth := s.router.Group("/auth")
+	auth := s.Router.Group("/auth")
 	{
-		auth.POST("/register", s.handleUserRegistration())
-		auth.POST("/login", s.handleUserLogin())
+		auth.POST("/register", handlers.UserRegistration(s.Store, s.JWTkey))
+		auth.POST("/login", handlers.UserLogin(s.Store, s.JWTkey))
 	}
-	s.router.GET("/swagger/*", echoSwagger.WrapHandler)
-	s.router.Static("/database/", "../database/")
+	s.Router.GET("/swagger/*", echoSwagger.WrapHandler)
+	s.Router.Static("/database/", "../database/")
 
 	return nil
 }

@@ -1,8 +1,9 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"spotify-clone/server/internal/models"
+	"spotify-clone/server/internal/store"
 	"strconv"
 
 	"github.com/golang-jwt/jwt"
@@ -13,7 +14,7 @@ type songRequest struct {
 	Title string `json:""`
 }
 
-// handleSongsCreate docs
+// SongsCreate docs
 // @Tags		songs
 // @Summary		Upload a song
 // @Description	Uploads a song and its cover with all the info about that song
@@ -25,7 +26,7 @@ type songRequest struct {
 // @Param		title			formData	string			true    "The title for that song"
 // @Success		200 	"we uploaded your song"
 // @Router		/songs	[post]
-func (s *Server) handleSongsCreate() echo.HandlerFunc {
+func SongsCreate(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user := c.Get("user")
 		token := user.(*jwt.Token)
@@ -35,12 +36,12 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 
 		audio, err := c.FormFile("audio")
 		if err != nil {
-			s.Error(http.StatusBadRequest, "unable to read audio file", err, c)
+			throwError(http.StatusBadRequest, "unable to read audio file", err, c)
 			return err
 		}
 		cover, err := c.FormFile("cover")
 		if err != nil {
-			s.Error(http.StatusBadRequest, "unable to read image file", err, c)
+			throwError(http.StatusBadRequest, "unable to read image file", err, c)
 			return err
 		}
 		song := models.Song{
@@ -52,13 +53,13 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 
 		song.UUIDurl()
 
-		if err := s.store.Song().Create(&song); err != nil {
-			s.Error(http.StatusInternalServerError, "unable to save info into database", err, c)
+		if err := store.Song().Create(&song); err != nil {
+			throwError(http.StatusInternalServerError, "unable to save info into database", err, c)
 			return err
 		}
 
 		if err := song.UploadSong(audio, cover); err != nil {
-			s.Error(http.StatusInternalServerError, "unable to save audio file into database", err, c)
+			throwError(http.StatusInternalServerError, "unable to save audio file into database", err, c)
 			return err
 		}
 		c.JSON(http.StatusOK, "we uploaded your song")
@@ -66,7 +67,7 @@ func (s *Server) handleSongsCreate() echo.HandlerFunc {
 	}
 }
 
-func (s *Server) handleSongsFindByID() echo.HandlerFunc {
+func SongsFindByID(store store.Store) echo.HandlerFunc {
 	type response struct {
 		Title      string `json:"title"`
 		AuthorName string `json:"author_name"`
@@ -75,13 +76,13 @@ func (s *Server) handleSongsFindByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "it is not a proper id", err, c)
+			throwError(http.StatusBadRequest, "it is not a proper id", err, c)
 			return err
 		}
 
-		song, err := s.store.Song().FindByID(id)
+		song, err := store.Song().FindByID(id)
 		if err != nil {
-			s.Error(http.StatusBadRequest, "it is not a proper id", err, c)
+			throwError(http.StatusBadRequest, "it is not a proper id", err, c)
 			return err
 		}
 		resp := response{
@@ -95,7 +96,7 @@ func (s *Server) handleSongsFindByID() echo.HandlerFunc {
 
 // be carefull with this function
 // if database is medium size this can slow down the whole server
-func (s *Server) handleGetAllSongs() echo.HandlerFunc {
+func GetAllSongs(store store.Store) echo.HandlerFunc {
 	type song struct {
 		ID       int    `json:"id"`
 		Name     string `json:"name"`

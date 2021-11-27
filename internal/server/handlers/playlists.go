@@ -1,8 +1,9 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"spotify-clone/server/internal/models"
+	"spotify-clone/server/internal/store"
 	"strconv"
 
 	"github.com/golang-jwt/jwt"
@@ -16,7 +17,7 @@ type playlistCreateResponse struct {
 	message string `json:"message"`
 }
 
-// handlePlaylistsCreate docs
+// PlaylistsCreate docs
 // @Tags		playlists
 // @Summary		Create a playlist
 // @Description	Creates a new playlist that can be accesed by anyone but only you can edit it
@@ -26,11 +27,11 @@ type playlistCreateResponse struct {
 // @Param       name            body        playlistCreateRequest          true     "The name of the playlist"
 // @Success		200 	"we created your playlist"
 // @Router		/playlists	[post]
-func (s *Server) handlePlaylistsCreate() echo.HandlerFunc {
+func PlaylistsCreate(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &playlistCreateRequest{}
 		if err := c.Bind(req); err != nil {
-			s.Error(http.StatusBadRequest, "could not decode json", err, c)
+			throwError(http.StatusBadRequest, "could not decode json", err, c)
 			return err
 		}
 
@@ -46,15 +47,17 @@ func (s *Server) handlePlaylistsCreate() echo.HandlerFunc {
 			},
 		}
 
-		if err := s.store.Playlist().Create(playlist); err != nil {
-			s.Error(http.StatusInternalServerError, "our database did not like your info", err, c)
+		if err := store.Playlist().Create(playlist); err != nil {
+			throwError(http.StatusInternalServerError, "our database did not like your info", err, c)
 			return err
 		}
-		return c.JSON(http.StatusOK, playlistCreateResponse{message: "we created your playlist! 🥳"})
+		return c.JSON(http.StatusOK, responseMessage{
+			Code:    http.StatusOK,
+			Message: "we created your playlist! 🥳"})
 	}
 }
 
-// handlePlaylistsAddSong docs
+// PlaylistsAddSong docs
 // @Tags		playlists
 // @Summary		Add a song
 // @Description	Adds a song to whatever playlist you want to. But it has to be your playlist that you created
@@ -65,7 +68,7 @@ func (s *Server) handlePlaylistsCreate() echo.HandlerFunc {
 // @Param       song_id            query        int          true     "The id for the song"
 // @Success		200 	"we created your playlist"
 // @Router		/playlists	[put]
-func (s *Server) handlePlaylistsAddSong() echo.HandlerFunc {
+func PlaylistsAddSong(store store.Store) echo.HandlerFunc {
 	type response struct {
 		Message string `json:"message"`
 	}
@@ -76,38 +79,38 @@ func (s *Server) handlePlaylistsAddSong() echo.HandlerFunc {
 
 		playlistID, err := strconv.Atoi(c.QueryParam("playlist"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "incorrect query parameters", err, c)
+			throwError(http.StatusBadRequest, "incorrect query parameters", err, c)
 			return err
 		}
 		songID, err := strconv.Atoi(c.QueryParam("song"))
 
 		if err != nil {
-			s.Error(http.StatusBadRequest, "incorrect query parameters", err, c)
+			throwError(http.StatusBadRequest, "incorrect query parameters", err, c)
 			return err
 		}
 
-		playlists, err := s.store.Playlist().UsersPlaylists(int(claims["userid"].(float64)))
+		playlists, err := store.Playlist().UsersPlaylists(int(claims["userid"].(float64)))
 		if err != nil {
-			s.Error(http.StatusInternalServerError, "database did not find any records", err, c)
+			throwError(http.StatusInternalServerError, "database did not find any records", err, c)
 			return err
 		}
 
 		for i := 0; i < len(playlists); i++ {
 			if playlists[i].ID == playlistID {
-				if err := s.store.Playlist().AddSong(playlistID, songID); err != nil {
-					s.Error(http.StatusInternalServerError, "database did not like your data", err, c)
+				if err := store.Playlist().AddSong(playlistID, songID); err != nil {
+					throwError(http.StatusInternalServerError, "database did not like your data", err, c)
 					return err
 				}
 				return c.JSON(http.StatusOK, response{Message: "we added this song to your playlist! 😁"})
 			}
 		}
 
-		s.Error(http.StatusBadRequest, "we dont know what went wrong", err, c)
+		throwError(http.StatusBadRequest, "we dont know what went wrong", err, c)
 		return err
 	}
 }
 
-// handlePlaylistsGetSongsFromPlaylist docs
+// GetSongsFromPlaylist docs
 // @Tags		playlists
 // @Summary		Get Songs from playlist
 // @Description	Gives you an array of json with songs from a playlist you want
@@ -116,28 +119,24 @@ func (s *Server) handlePlaylistsAddSong() echo.HandlerFunc {
 // @Param       id              path       int          true   "The id for the playlist"
 // @Success		200 	"we created your playlist"
 // @Router		/playlists/{id}	[get]
-func (s *Server) handlePlaylistsGetSongsFromPlaylist() echo.HandlerFunc {
-	type songs struct {
-		ID         int    `json:"song_id"`
-		Name       string `json:"name"`
-		AuthorName string `json:"author_name"`
-		URL        string `json:"url"`
-		CoverURL   string `json:"cover_url"`
-	}
-	type response []songs
+func GetSongsFromPlaylist(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		playlistID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "id is not a number!", err, c)
+			throwError(http.StatusBadRequest, "id is not a number!", err, c)
 			return err
 		}
 
-		songs, err := s.store.Playlist().GetSongsFromPlaylist(playlistID)
+		songs, err := store.Playlist().GetSongsFromPlaylist(playlistID)
 		if err != nil {
-			s.Error(http.StatusBadRequest, "database did not like your data!", err, c)
+			throwError(http.StatusBadRequest, "database did not like your data!", err, c)
 			return err
 		}
 
-		return c.JSON(http.StatusOK, songs)
+		return c.JSON(http.StatusOK,
+			responseMessage{
+				Code: http.StatusOK,
+				Data: songs,
+			})
 	}
 }

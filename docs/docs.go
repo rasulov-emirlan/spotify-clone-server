@@ -53,7 +53,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.authRequest"
+                            "$ref": "#/definitions/handlers.authRequest"
                         }
                     }
                 ],
@@ -84,7 +84,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.authRequest"
+                            "$ref": "#/definitions/handlers.authRequest"
                         }
                     }
                 ],
@@ -95,7 +95,7 @@ var doc = `{
                 }
             }
         },
-        "/gnres": {
+        "/genres": {
             "put": {
                 "description": "Adds a song to a genre",
                 "consumes": [
@@ -149,7 +149,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.genresCreateRequest"
+                            "$ref": "#/definitions/handlers.genresCreateRequest"
                         }
                     }
                 ],
@@ -160,7 +160,7 @@ var doc = `{
                 }
             }
         },
-        "/gnres/{genre}": {
+        "/genres/{genre}": {
             "get": {
                 "description": "Adds a song to a genre",
                 "consumes": [
@@ -257,7 +257,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server.playlistCreateRequest"
+                            "$ref": "#/definitions/handlers.playlistCreateRequest"
                         }
                     }
                 ],
@@ -349,7 +349,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "server.authRequest": {
+        "handlers.authRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -366,7 +366,7 @@ var doc = `{
                 }
             }
         },
-        "server.authResponse": {
+        "handlers.authResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -374,7 +374,7 @@ var doc = `{
                 }
             }
         },
-        "server.genresCreateRequest": {
+        "handlers.genresCreateRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -382,7 +382,7 @@ var doc = `{
                 }
             }
         },
-        "server.playlistCreateRequest": {
+        "handlers.playlistCreateRequest": {
             "type": "object",
             "properties": {
                 "name": {

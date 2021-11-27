@@ -1,8 +1,9 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"spotify-clone/server/internal/models"
+	"spotify-clone/server/internal/store"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -12,7 +13,7 @@ type genresCreateRequest struct {
 	Name string `json:"name"`
 }
 
-// handleGenresCreate docs
+// GenresCreate docs
 // @Tags		genres
 // @Summary		Create a new genre
 // @Description	Creates a new genre
@@ -20,17 +21,14 @@ type genresCreateRequest struct {
 // @Produce		json
 // @Param       name              body       genresCreateRequest          true   "A name for new genre"
 // @Success		200 	"we created your genre"
-// @Router		/gnres	[post]
-func (s *Server) handleGenresCreate() echo.HandlerFunc {
-	type response struct {
-		message string `json:"message"`
-	}
+// @Router		/genres	[post]
+func GenresCreate(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 
 		req := &genresCreateRequest{}
 
 		if err := c.Bind(req); err != nil {
-			s.Error(http.StatusBadRequest, "we could not decode you json", err, c)
+			throwError(http.StatusBadRequest, "we could not decode you json", err, c)
 			return err
 		}
 
@@ -38,15 +36,19 @@ func (s *Server) handleGenresCreate() echo.HandlerFunc {
 			Name: req.Name,
 		}
 
-		if err := s.store.Genre().Create(genre); err != nil {
-			s.Error(http.StatusBadRequest, "our database did not like your data", err, c)
+		if err := store.Genre().Create(genre); err != nil {
+			throwError(http.StatusBadRequest, "our database did not like your data", err, c)
 			return err
 		}
-		return c.JSON(http.StatusOK, response{message: "we have added your genre"})
+		return c.JSON(http.StatusOK, responseMessage{
+			Code:    http.StatusOK,
+			Message: "we have created your genre",
+			Data:    genre,
+		})
 	}
 }
 
-// handleGenresAddSong docs
+// GenresAddSong docs
 // @Tags		genres
 // @Summary		Add a song
 // @Description	Adds a song to a genre
@@ -55,33 +57,33 @@ func (s *Server) handleGenresCreate() echo.HandlerFunc {
 // @Param       genre              query       int          true   "id for a genre"
 // @Param       song              query       int          true   "id for a song"
 // @Success		200 	"we added a new song to the genre"
-// @Router		/gnres	[put]
-func (s *Server) handleGenresAddSong() echo.HandlerFunc {
-	type response struct {
-		Message string `json:"message"`
-	}
+// @Router		/genres	[put]
+func GenresAddSong(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		genreID, err := strconv.Atoi(c.QueryParam("genre"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "could not get correct query parametrs", err, c)
+			throwError(http.StatusBadRequest, "could not get correct query parametrs", err, c)
 			return err
 		}
 
 		songID, err := strconv.Atoi(c.QueryParam("song"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "could not get correct query parametrs", err, c)
+			throwError(http.StatusBadRequest, "could not get correct query parametrs", err, c)
 			return err
 		}
 
-		if err := s.store.Genre().AddSong(songID, genreID); err != nil {
-			s.Error(http.StatusBadRequest, "our database did not like your data", err, c)
+		if err := store.Genre().AddSong(songID, genreID); err != nil {
+			throwError(http.StatusBadRequest, "our database did not like your data", err, c)
 			return err
 		}
-		return c.JSON(http.StatusOK, response{Message: "we have added your song to this genre! :)"})
+		return c.JSON(http.StatusOK, responseMessage{
+			Code:    http.StatusOK,
+			Message: "we have added your song to this genre! :)",
+		})
 	}
 }
 
-// handleGenresSongs docs
+// GenresSongs docs
 // @Tags		genres
 // @Summary		Add a song
 // @Description	Adds a song to a genre
@@ -89,20 +91,23 @@ func (s *Server) handleGenresAddSong() echo.HandlerFunc {
 // @Produce		json
 // @Param       genre              path       int          true   "id for a genre"
 // @Success		200 	"we added a new song to the genre"
-// @Router		/gnres/{genre}	[get]
-func (s *Server) handleGenresSongs() echo.HandlerFunc {
+// @Router		/genres/{genre}	[get]
+func GenresSongs(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		genreID, err := strconv.Atoi(c.Param("genre"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "could not get correct url parameter ", err, c)
+			throwError(http.StatusBadRequest, "could not get correct url parameter ", err, c)
 			return err
 		}
 
-		songs, err := s.store.Genre().GetSongs(genreID)
+		songs, err := store.Genre().GetSongs(genreID)
 		if err != nil {
-			s.Error(http.StatusBadRequest, "our database did not like your request ", err, c)
+			throwError(http.StatusBadRequest, "our database did not like your request ", err, c)
 			return err
 		}
-		return c.JSON(http.StatusOK, songs)
+		return c.JSON(http.StatusOK, responseMessage{
+			Code: http.StatusOK,
+			Data: songs,
+		})
 	}
 }

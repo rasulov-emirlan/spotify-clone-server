@@ -2,7 +2,7 @@ basePath: /
 consumes:
 - application/json
 definitions:
-  server.authRequest:
+  handlers.authRequest:
     properties:
       email:
         example: john@gmai.com
@@ -14,17 +14,17 @@ definitions:
         example: "123456"
         type: string
     type: object
-  server.authResponse:
+  handlers.authResponse:
     properties:
       token:
         type: string
     type: object
-  server.genresCreateRequest:
+  handlers.genresCreateRequest:
     properties:
       name:
         type: string
     type: object
-  server.playlistCreateRequest:
+  handlers.playlistCreateRequest:
     properties:
       name:
         example: my favorites
@@ -54,7 +54,7 @@ paths:
         name: param
         required: true
         schema:
-          $ref: '#/definitions/server.authRequest'
+          $ref: '#/definitions/handlers.authRequest'
       produces:
       - application/json
       responses:
@@ -74,7 +74,7 @@ paths:
         name: param
         required: true
         schema:
-          $ref: '#/definitions/server.authRequest'
+          $ref: '#/definitions/handlers.authRequest'
       produces:
       - application/json
       responses:
@@ -83,7 +83,7 @@ paths:
       summary: Register user
       tags:
       - auth
-  /gnres:
+  /genres:
     post:
       consumes:
       - application/json
@@ -94,7 +94,7 @@ paths:
         name: name
         required: true
         schema:
-          $ref: '#/definitions/server.genresCreateRequest'
+          $ref: '#/definitions/handlers.genresCreateRequest'
       produces:
       - application/json
       responses:
@@ -126,7 +126,7 @@ paths:
       summary: Add a song
       tags:
       - genres
-  /gnres/{genre}:
+  /genres/{genre}:
     get:
       consumes:
       - application/json
@@ -162,7 +162,7 @@ paths:
         name: name
         required: true
         schema:
-          $ref: '#/definitions/server.playlistCreateRequest'
+          $ref: '#/definitions/handlers.playlistCreateRequest'
       produces:
       - application/json
       responses:
