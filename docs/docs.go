@@ -95,6 +95,100 @@ var doc = `{
                 }
             }
         },
+        "/gnres": {
+            "put": {
+                "description": "Adds a song to a genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Add a song",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id for a genre",
+                        "name": "genre",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id for a song",
+                        "name": "song",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we added a new song to the genre"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Create a new genre",
+                "parameters": [
+                    {
+                        "description": "A name for new genre",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.genresCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we created your genre"
+                    }
+                }
+            }
+        },
+        "/gnres/{genre}": {
+            "get": {
+                "description": "Adds a song to a genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Add a song",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id for a genre",
+                        "name": "genre",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we added a new song to the genre"
+                    }
+                }
+            }
+        },
         "/playlists": {
             "put": {
                 "description": "Adds a song to whatever playlist you want to. But it has to be your playlist that you created",
@@ -165,6 +259,35 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/server.playlistCreateRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we created your playlist"
+                    }
+                }
+            }
+        },
+        "/playlists/{id}": {
+            "get": {
+                "description": "Gives you an array of json with songs from a playlist you want",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlists"
+                ],
+                "summary": "Get Songs from playlist",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The id for the playlist",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -247,6 +370,14 @@ var doc = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.genresCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }

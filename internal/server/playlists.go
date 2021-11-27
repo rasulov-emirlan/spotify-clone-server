@@ -107,6 +107,15 @@ func (s *Server) handlePlaylistsAddSong() echo.HandlerFunc {
 	}
 }
 
+// handlePlaylistsGetSongsFromPlaylist docs
+// @Tags		playlists
+// @Summary		Get Songs from playlist
+// @Description	Gives you an array of json with songs from a playlist you want
+// @Accept		json
+// @Produce		json
+// @Param       id              path       int          true   "The id for the playlist"
+// @Success		200 	"we created your playlist"
+// @Router		/playlists/{id}	[get]
 func (s *Server) handlePlaylistsGetSongsFromPlaylist() echo.HandlerFunc {
 	type songs struct {
 		ID         int    `json:"song_id"`
@@ -117,9 +126,9 @@ func (s *Server) handlePlaylistsGetSongsFromPlaylist() echo.HandlerFunc {
 	}
 	type response []songs
 	return func(c echo.Context) error {
-		playlistID, err := strconv.Atoi(c.Param("playlist_id"))
+		playlistID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			s.Error(http.StatusBadRequest, "playlist_id is not a number!", err, c)
+			s.Error(http.StatusBadRequest, "id is not a number!", err, c)
 			return err
 		}
 

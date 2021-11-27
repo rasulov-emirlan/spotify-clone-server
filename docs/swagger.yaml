@@ -19,6 +19,11 @@ definitions:
       token:
         type: string
     type: object
+  server.genresCreateRequest:
+    properties:
+      name:
+        type: string
+    type: object
   server.playlistCreateRequest:
     properties:
       name:
@@ -78,6 +83,68 @@ paths:
       summary: Register user
       tags:
       - auth
+  /gnres:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new genre
+      parameters:
+      - description: A name for new genre
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/server.genresCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we created your genre
+      summary: Create a new genre
+      tags:
+      - genres
+    put:
+      consumes:
+      - application/json
+      description: Adds a song to a genre
+      parameters:
+      - description: id for a genre
+        in: query
+        name: genre
+        required: true
+        type: integer
+      - description: id for a song
+        in: query
+        name: song
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we added a new song to the genre
+      summary: Add a song
+      tags:
+      - genres
+  /gnres/{genre}:
+    get:
+      consumes:
+      - application/json
+      description: Adds a song to a genre
+      parameters:
+      - description: id for a genre
+        in: path
+        name: genre
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we added a new song to the genre
+      summary: Add a song
+      tags:
+      - genres
   /playlists:
     post:
       consumes:
@@ -130,6 +197,25 @@ paths:
         "200":
           description: we created your playlist
       summary: Add a song
+      tags:
+      - playlists
+  /playlists/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives you an array of json with songs from a playlist you want
+      parameters:
+      - description: The id for the playlist
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we created your playlist
+      summary: Get Songs from playlist
       tags:
       - playlists
   /songs:

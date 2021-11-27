@@ -8,16 +8,26 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type genresCreateRequest struct {
+	Name string `json:"name"`
+}
+
+// handleGenresCreate docs
+// @Tags		genres
+// @Summary		Create a new genre
+// @Description	Creates a new genre
+// @Accept		json
+// @Produce		json
+// @Param       name              body       genresCreateRequest          true   "A name for new genre"
+// @Success		200 	"we created your genre"
+// @Router		/gnres	[post]
 func (s *Server) handleGenresCreate() echo.HandlerFunc {
-	type request struct {
-		Name string `json:"name"`
-	}
 	type response struct {
 		message string `json:"message"`
 	}
 	return func(c echo.Context) error {
 
-		req := &request{}
+		req := &genresCreateRequest{}
 
 		if err := c.Bind(req); err != nil {
 			s.Error(http.StatusBadRequest, "we could not decode you json", err, c)
@@ -36,6 +46,16 @@ func (s *Server) handleGenresCreate() echo.HandlerFunc {
 	}
 }
 
+// handleGenresAddSong docs
+// @Tags		genres
+// @Summary		Add a song
+// @Description	Adds a song to a genre
+// @Accept		json
+// @Produce		json
+// @Param       genre              query       int          true   "id for a genre"
+// @Param       song              query       int          true   "id for a song"
+// @Success		200 	"we added a new song to the genre"
+// @Router		/gnres	[put]
 func (s *Server) handleGenresAddSong() echo.HandlerFunc {
 	type response struct {
 		Message string `json:"message"`
@@ -61,6 +81,15 @@ func (s *Server) handleGenresAddSong() echo.HandlerFunc {
 	}
 }
 
+// handleGenresSongs docs
+// @Tags		genres
+// @Summary		Add a song
+// @Description	Adds a song to a genre
+// @Accept		json
+// @Produce		json
+// @Param       genre              path       int          true   "id for a genre"
+// @Success		200 	"we added a new song to the genre"
+// @Router		/gnres/{genre}	[get]
 func (s *Server) handleGenresSongs() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		genreID, err := strconv.Atoi(c.Param("genre"))
