@@ -13,7 +13,7 @@ type songRequest struct {
 	Title string `json:""`
 }
 
-// ProfileUpload docs
+// handleSongsCreate docs
 // @Tags		songs
 // @Summary		Upload a song
 // @Description	Uploads a song and its cover with all the info about that song

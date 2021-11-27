@@ -19,6 +19,12 @@ definitions:
       token:
         type: string
     type: object
+  server.playlistCreateRequest:
+    properties:
+      name:
+        example: my favorites
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -72,6 +78,60 @@ paths:
       summary: Register user
       tags:
       - auth
+  /playlists:
+    post:
+      consumes:
+      - application/json
+      description: Uploads a song and its cover with all the info about that song
+      parameters:
+      - description: JWToken for auth
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The name of the playlist
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/server.playlistCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we created your playlist
+      summary: Upload a song
+      tags:
+      - playlists
+    put:
+      consumes:
+      - application/json
+      description: Adds a song to whatever playlist you want to. But it has to be
+        your playlist that you created
+      parameters:
+      - description: JWToken for auth
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: The id for the playlist
+        in: query
+        name: playlist_id
+        required: true
+        type: integer
+      - description: The id for the song
+        in: query
+        name: song_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we created your playlist
+      summary: Add a song
+      tags:
+      - playlists
   /songs:
     post:
       consumes:

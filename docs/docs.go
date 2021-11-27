@@ -95,6 +95,85 @@ var doc = `{
                 }
             }
         },
+        "/playlists": {
+            "put": {
+                "description": "Adds a song to whatever playlist you want to. But it has to be your playlist that you created",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlists"
+                ],
+                "summary": "Add a song",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWToken for auth",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The id for the playlist",
+                        "name": "playlist_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The id for the song",
+                        "name": "song_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we created your playlist"
+                    }
+                }
+            },
+            "post": {
+                "description": "Uploads a song and its cover with all the info about that song",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlists"
+                ],
+                "summary": "Upload a song",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWToken for auth",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "The name of the playlist",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.playlistCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we created your playlist"
+                    }
+                }
+            }
+        },
         "/songs": {
             "post": {
                 "description": "Uploads a song and its cover with all the info about that song",
@@ -169,6 +248,15 @@ var doc = `{
             "properties": {
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "server.playlistCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "my favorites"
                 }
             }
         }

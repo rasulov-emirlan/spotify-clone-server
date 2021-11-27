@@ -9,15 +9,26 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type playlistCreateRequest struct {
+	Name string `json:"name" example:"my favorites"`
+}
+type playlistCreateResponse struct {
+	message string `json:"message"`
+}
+
+// handlePlaylistsCreate docs
+// @Tags		playlists
+// @Summary		Upload a song
+// @Description	Uploads a song and its cover with all the info about that song
+// @Accept		json
+// @Produce		json
+// @Param		Authorization	header		string			true	"JWToken for auth"
+// @Param       name            body        playlistCreateRequest          true     "The name of the playlist"
+// @Success		200 	"we created your playlist"
+// @Router		/playlists	[post]
 func (s *Server) handlePlaylistsCreate() echo.HandlerFunc {
-	type request struct {
-		Name string `json:"name"`
-	}
-	type response struct {
-		message string `json:"message"`
-	}
 	return func(c echo.Context) error {
-		req := &request{}
+		req := &playlistCreateRequest{}
 		if err := c.Bind(req); err != nil {
 			s.Error(http.StatusBadRequest, "could not decode json", err, c)
 			return err
@@ -39,10 +50,21 @@ func (s *Server) handlePlaylistsCreate() echo.HandlerFunc {
 			s.Error(http.StatusInternalServerError, "our database did not like your info", err, c)
 			return err
 		}
-		return c.JSON(http.StatusOK, response{message: "we created your playlist! 🥳"})
+		return c.JSON(http.StatusOK, playlistCreateResponse{message: "we created your playlist! 🥳"})
 	}
 }
 
+// handlePlaylistsAddSong docs
+// @Tags		playlists
+// @Summary		Add a song
+// @Description	Adds a song to whatever playlist you want to. But it has to be your playlist that you created
+// @Accept		json
+// @Produce		json
+// @Param		Authorization	header		string			true	"JWToken for auth"
+// @Param       playlist_id            query        int          true     "The id for the playlist"
+// @Param       song_id            query        int          true     "The id for the song"
+// @Success		200 	"we created your playlist"
+// @Router		/playlists	[put]
 func (s *Server) handlePlaylistsAddSong() echo.HandlerFunc {
 	type response struct {
 		Message string `json:"message"`
@@ -52,12 +74,12 @@ func (s *Server) handlePlaylistsAddSong() echo.HandlerFunc {
 		token := user.(*jwt.Token)
 		claims := token.Claims.(jwt.MapClaims)
 
-		playlistID, err := strconv.Atoi(c.QueryParam("playlist_id"))
+		playlistID, err := strconv.Atoi(c.QueryParam("playlist"))
 		if err != nil {
 			s.Error(http.StatusBadRequest, "incorrect query parameters", err, c)
 			return err
 		}
-		songID, err := strconv.Atoi(c.QueryParam("song_id"))
+		songID, err := strconv.Atoi(c.QueryParam("song"))
 
 		if err != nil {
 			s.Error(http.StatusBadRequest, "incorrect query parameters", err, c)
