@@ -11,10 +11,10 @@ generate_swagger:
 	swag init -g ./internal/server/server.go
 
 migrate_up:
-	migrate -database ${POSTGRESQL_URL} -path /migrationsdb/migrations up 
+	migrate -database ${POSTGRESQL_URL} -path ./migrations/db/migrations up 
 
 migrate_down:
-	migrate -database ${POSTGRESQL_URL} -path /migrationsdb/migrations down
+	migrate -database ${POSTGRESQL_URL} -path ./migrations/db/migrations down
 
 
 install_deps:
