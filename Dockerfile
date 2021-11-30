@@ -1,8 +1,10 @@
-FROM golang:latest
-COPY . /app
+FROM golang:latest as build
 WORKDIR /app
-RUN go mod tidy
-RUN make build
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . ./
+RUN CGO_ENABLED=0 go build -v ./cmd/apiserver
+
 FROM alpine
-COPY --from=0 /app/apiserver .
+COPY --from=build /app/apiserver /app/.dev.env ./
 CMD ["./apiserver"]
