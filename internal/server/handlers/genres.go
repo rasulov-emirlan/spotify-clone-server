@@ -118,7 +118,7 @@ func GenresAddSong(store store.Store) echo.HandlerFunc {
 // @Router		/genres/{genre}	[get]
 func GenresSongs(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		genreID, err := strconv.Atoi(c.Param("id"))
+		genreID, err := strconv.Atoi(c.Param("genre"))
 		if err != nil {
 			throwError(http.StatusBadRequest, "could not get correct url parameter ", err, c)
 			return err

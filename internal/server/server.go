@@ -36,7 +36,7 @@ type Server struct {
 // New() is our constructor for server
 // here we specify everything that needs to be done before staring the server
 func New() (*Server, error) {
-	dbconfig, err := config.NewSQLDBconfig()
+	dbconfig, err := config.NewSQLDBlink()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -112,12 +112,4 @@ func (s *Server) plugRoutes() error {
 	s.Router.Static("/database/", "../database/")
 
 	return nil
-}
-
-type response map[string]interface {
-}
-
-func (s *Server) Error(code int, message string, err error, c echo.Context) {
-	c.JSON(code, response{"message": message})
-	log.Println(message, err)
 }

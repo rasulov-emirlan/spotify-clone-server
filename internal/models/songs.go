@@ -43,7 +43,7 @@ func (s *Song) UploadSong(audiofile, imagefile *multipart.FileHeader) error {
 	if imagefile.Header["Content-Type"][0] != "image/png" {
 		return wrongfiletype
 	}
-	if audiofile.Header["Content-Type"][0] != "audio/mpeg" && audiofile.Header["Content-Type"][0] != "audio/mp3" {
+	if audiofile.Header["Content-Type"][0] != "audio/mpeg" && audiofile.Header["Content-Type"][0] != "audio/mp3" && audiofile.Header["Content-Type"][0] != "audio/wav" {
 		return wrongfiletype
 	}
 	// here is logic for saving covers for songs

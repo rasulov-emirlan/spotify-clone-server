@@ -8,6 +8,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
+func NewSQLDBlink() (string, error) {
+	err := godotenv.Load(".dev.env")
+	if err != nil {
+		return "", err
+	}
+	link := os.Getenv("DBLINK")
+	return link, nil
+
+}
 func NewPortForServer() (string, error) {
 	err := godotenv.Load(".dev.env")
 	if err != nil {
