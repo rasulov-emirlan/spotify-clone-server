@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=spotify-clone
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
@@ -15,7 +15,8 @@ services:
     volumes:
       - database_postgres:/var/lib/postgresql/data
   web:
-    build: .
+    restart: always
+    build: ./
     container_name: "spotify-clone-server"
     environment:
       PORT: "5000"
@@ -32,8 +33,8 @@ services:
       - fullstack
 
 volumes:
-  database_postgres:
+  database_postgres: null
 
 networks:
- fullstack:
-  driver: bridge
+  fullstack:
+    driver: bridge
