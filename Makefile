@@ -1,4 +1,4 @@
-POSTGRESQL_URL='postgres://aqqhwvfetzhtxs:895ab244936af93ecf0a9827b4ffa88df78f62340ab48bf2405e2f394d09c877@ec2-18-213-133-45.compute-1.amazonaws.com:5432/d2f40c70mg32vo'
+POSTGRESQL_URL='somedblink'
 
 dev:
 	go build -v ./cmd/apiserver
