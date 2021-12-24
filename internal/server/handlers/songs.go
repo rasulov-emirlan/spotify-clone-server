@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"spotify-clone/server/internal/fs"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
 	"strconv"
@@ -26,7 +27,7 @@ type songRequest struct {
 // @Param		title			formData	string			true    "The title for that song"
 // @Success		200 	"we uploaded your song"
 // @Router		/songs	[post]
-func SongsCreate(store store.Store) echo.HandlerFunc {
+func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user := c.Get("user")
 		token := user.(*jwt.Token)
@@ -39,11 +40,11 @@ func SongsCreate(store store.Store) echo.HandlerFunc {
 			throwError(http.StatusBadRequest, "unable to read audio file", err, c)
 			return err
 		}
-		cover, err := c.FormFile("cover")
-		if err != nil {
-			throwError(http.StatusBadRequest, "unable to read image file", err, c)
-			return err
-		}
+		// cover, err := c.FormFile("cover")
+		// if err != nil {
+		// 	throwError(http.StatusBadRequest, "unable to read image file", err, c)
+		// 	return err
+		// }
 		song := models.Song{
 			Title: title,
 			Author: models.User{
@@ -58,8 +59,18 @@ func SongsCreate(store store.Store) echo.HandlerFunc {
 			return err
 		}
 
-		if err := song.UploadSong(audio, cover); err != nil {
-			throwError(http.StatusInternalServerError, "unable to save audio file into database", err, c)
+		// if err := song.UploadSong(audio, cover); err != nil {
+		// 	throwError(http.StatusInternalServerError, "unable to save audio file into database", err, c)
+		// 	return err
+		// }
+
+		a, err := audio.Open()
+		if err != nil {
+			throwError(http.StatusInternalServerError, "unable to decode audiofile", err, c)
+			return err
+		}
+		if err := fs.UploadFile(song.Title, audio.Header["Content-Type"][0], a, "1jblmQQe2Izf5L1hSVRIKTtsdQi00i0ia"); err != nil {
+			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
 		}
 		c.JSON(http.StatusOK, "we uploaded your song")
