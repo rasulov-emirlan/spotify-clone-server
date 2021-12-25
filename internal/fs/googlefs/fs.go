@@ -44,11 +44,11 @@ func NewFileSystem() (fs.FileSystem, error) {
 	}, nil
 }
 
-func (fs *FileSystem) UploadFile(name string, mimeType string, content io.Reader, folderName string) (string, error) {
+func (fs *FileSystem) UploadFile(name string, mimeType string, content io.Reader, folderID string) (string, error) {
 	f := &drive.File{
 		MimeType: mimeType,
 		Name:     name,
-		Parents:  []string{},
+		Parents:  []string{folderID},
 	}
 	file, err := fs.service.Files.Create(f).Media(content).Do()
 

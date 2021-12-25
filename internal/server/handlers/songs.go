@@ -24,7 +24,7 @@ type songRequest struct {
 // @Param		Authorization	header		string			true	"JWToken for auth"
 // @Param		audio			formData	file			true    "The actual audiofile"
 // @Param		cover			formData	file			true    "The cover for the song"
-// @Param		title			formData	string			true    "The title for that song"
+// @Param		name			formData	string			true    "The name for that song"
 // @Success		200 	"we uploaded your song"
 // @Router		/songs	[post]
 func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
@@ -33,29 +33,25 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 		token := user.(*jwt.Token)
 
 		claims := token.Claims.(jwt.MapClaims)
-		title := c.FormValue("title")
+		name := c.FormValue("name")
 
 		audio, err := c.FormFile("audio")
 		if err != nil {
 			throwError(http.StatusBadRequest, "unable to read audio file", err, c)
 			return err
 		}
-		// cover, err := c.FormFile("cover")
-		// if err != nil {
-		// 	throwError(http.StatusBadRequest, "unable to read image file", err, c)
-		// 	return err
-		// }
+		cover, err := c.FormFile("cover")
+		if err != nil {
+			throwError(http.StatusBadRequest, "unable to read image file", err, c)
+			return err
+		}
+
 		song := models.Song{
-			Title: title,
+			Name: name,
 			Author: models.User{
 				ID: int(claims["userid"].(float64)), // this is syntax for type assertion of interfaces
 			},
 		}
-
-		// if err := song.UploadSong(audio, cover); err != nil {
-		// 	throwError(http.StatusInternalServerError, "unable to save audio file into database", err, c)
-		// 	return err
-		// }
 
 		a, err := audio.Open()
 		if err != nil {
@@ -63,8 +59,15 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			return err
 		}
 		defer a.Close()
+		b, err := cover.Open()
+		if err != nil {
+			throwError(http.StatusInternalServerError, "unable to decode imagefile", err, c)
+			return err
+		}
+		defer a.Close()
 
-		songid, err := fs.UploadFile(song.Title, audio.Header["Content-Type"][0], a, "1jblmQQe2Izf5L1hSVRIKTtsdQi00i0ia")
+		// this wierd string values are ids of folders where we want to store our files
+		songid, err := fs.UploadFile(song.Name, audio.Header["Content-Type"][0], a, "1msU3gRmmtLLe_b-SyOcfsUnyFHtFtGuF")
 		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
@@ -72,11 +75,24 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 
 		_, err = fs.CreatePublicLink(songid)
 		if err != nil {
+			throwError(http.StatusInternalServerError, "unable to create a public link for the audiofle", err, c)
+			return err
+		}
+
+		coverid, err := fs.UploadFile(song.Name, audio.Header["Content-Type"][0], b, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
+		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
 		}
 
+		_, err = fs.CreatePublicLink(coverid)
+		if err != nil {
+			throwError(http.StatusInternalServerError, "unable to create a public link for the imagefile", err, c)
+			return err
+		}
+
 		song.URL = songid
+		song.CoverURL = coverid
 
 		if err := store.Song().Create(&song); err != nil {
 			throwError(http.StatusInternalServerError, "unable to save info into database", err, c)
@@ -97,7 +113,7 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 // @Accept		json
 // @Produce		json
 // @Param		from			query	int			true    "from which id to start"
-// @Param		to			query	int			true    "at which id to end"
+// @Param		to				query	int			true    "at which id to end"
 // @Success		200 	"here your songs"
 // @Router		/songs	[get]
 func SongsFromAtoB(store store.Store) echo.HandlerFunc {
@@ -127,7 +143,7 @@ func SongsFromAtoB(store store.Store) echo.HandlerFunc {
 
 func SongsFindByID(store store.Store) echo.HandlerFunc {
 	type response struct {
-		Title      string `json:"title"`
+		Name       string `json:"name"`
 		AuthorName string `json:"author_name"`
 		URL        string `json:"url"`
 	}
@@ -144,8 +160,8 @@ func SongsFindByID(store store.Store) echo.HandlerFunc {
 			return err
 		}
 		resp := response{
-			Title: song.Title,
-			URL:   song.URL,
+			Name: song.Name,
+			URL:  song.URL,
 		}
 		c.JSON(http.StatusOK, resp)
 		return nil

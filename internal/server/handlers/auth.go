@@ -9,9 +9,11 @@ import (
 )
 
 type authRequest struct {
-	Name     string `json:"name" example:"Johny Cash"`
-	Email    string `json:"email" example:"john@gmai.com"`
-	Password string `json:"password" example:"123456"`
+	UserName  string `json:"username" example:"Johnny"`
+	FullName  string `json:"full_name" example:"Johny Cash"`
+	BirthDate string `json:"birth_date" example:"2000-01-01"`
+	Email     string `json:"email" example:"john@gmai.com"`
+	Password  string `json:"password" example:"123456" omniemit`
 }
 
 type authResponse struct {
@@ -37,9 +39,11 @@ func UserRegistration(store store.Store, JWTkey string) echo.HandlerFunc {
 		}
 
 		user := &models.User{
-			Name:     req.Name,
-			Password: req.Password,
-			Email:    req.Email,
+			UserName:  req.UserName,
+			FullName:  req.FullName,
+			BirthDate: req.BirthDate,
+			Password:  req.Password,
+			Email:     req.Email,
 		}
 
 		if err := user.BeforeCreate(); err != nil {

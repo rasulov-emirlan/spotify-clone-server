@@ -11,16 +11,17 @@ import (
 
 type Song struct {
 	ID       int    `json:"id"`
-	Title    string `json:"title"`
+	Name     string `json:"name"`
 	Author   User   `json:"author"`
+	Length   int    `json:"length"`
 	URL      string `json:"url"`
 	CoverURL string `json:"cover_url"`
 }
 
 func TestSong() *Song {
 	return &Song{
-		Title: "Dancing Machine",
-		URL:   "youtube.com",
+		Name: "Dancing Machine",
+		URL:  "youtube.com",
 	}
 }
 
@@ -35,16 +36,16 @@ func (s *Song) UUIDurl() error {
 }
 
 var (
-	wrongfiletype = errors.New("we do not support this type of file")
+	errWrongFileType = errors.New("we do not support this type of file")
 )
 
 func (s *Song) UploadSong(audiofile, imagefile *multipart.FileHeader) error {
 
 	if imagefile.Header["Content-Type"][0] != "image/png" {
-		return wrongfiletype
+		return errWrongFileType
 	}
 	if audiofile.Header["Content-Type"][0] != "audio/mpeg" && audiofile.Header["Content-Type"][0] != "audio/mp3" && audiofile.Header["Content-Type"][0] != "audio/wav" {
-		return wrongfiletype
+		return errWrongFileType
 	}
 	// here is logic for saving covers for songs
 	coversrc, err := imagefile.Open()

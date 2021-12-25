@@ -410,8 +410,8 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "The title for that song",
-                        "name": "title",
+                        "description": "The name for that song",
+                        "name": "name",
                         "in": "formData",
                         "required": true
                     }
@@ -428,17 +428,25 @@ var doc = `{
         "handlers.authRequest": {
             "type": "object",
             "properties": {
+                "birth_date": {
+                    "type": "string",
+                    "example": "2000-01-01"
+                },
                 "email": {
                     "type": "string",
                     "example": "john@gmai.com"
                 },
-                "name": {
+                "full_name": {
                     "type": "string",
                     "example": "Johny Cash"
                 },
                 "password": {
                     "type": "string",
                     "example": "123456"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "Johnny"
                 }
             }
         },

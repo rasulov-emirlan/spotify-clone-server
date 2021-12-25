@@ -25,14 +25,12 @@ func (r *GenreRepository) AddSong(songID, genreID int) error {
 
 func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 	rows, err := r.db.Query(`
-	SELECT s.id, s.title, u.name AS username, s.author_id, s.url, sc.url AS coverurl
+	SELECT s.id, s.name, u.username, s.author_id, s.song_url, s.cover_picture_url
 	FROM songs_genres AS sg
 	INNER JOIN songs AS s
 	ON s.id = sg.song_id
 	INNER JOIN users AS u
 	ON u.id = s.author_id
-	INNER JOIN songs_covers AS sc
-	ON sc.song_id = s.id
 	WHERE sg.genre_id = $1;
 	`, genderID)
 
@@ -43,11 +41,11 @@ func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 	var songs []models.Song
 
 	var id, authorID int
-	var username, title, url, coverURL string
+	var username, name, url, coverURL string
 
 	for rows.Next() {
 		if err := rows.Scan(
-			&id, &title, &username, &authorID, &url, &coverURL,
+			&id, &name, &username, &authorID, &url, &coverURL,
 		); err != nil {
 			return nil, err
 		}
@@ -55,12 +53,12 @@ func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 		songs = append(songs,
 			models.Song{
 				ID:       id,
-				Title:    title,
+				Name:     name,
 				URL:      url,
 				CoverURL: coverURL,
 				Author: models.User{
-					ID:   authorID,
-					Name: username,
+					ID:       authorID,
+					UserName: username,
 				},
 			},
 		)
