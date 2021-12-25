@@ -4,14 +4,9 @@
 - rasulov-emirlan 💅
 - sultanaliev-s 🧠
 ## Howe to use this server 🤷
-- create repository called "database" right next to the servers repository.
-- inside it you have to create next list of repositories
-1. /audio
-2. /images
-- create .env file in the root of the project
-- start postgres server and create a database
-- in postgres database query all sql files from `migrations/sql` repository that end in `.up.sql`
-- than you are required to have a golang of version 1.17 at least
-- now that you have everything setup just run `make`
-in the root of the project
-- if you see any errors than debug it and dont be a pussy
+- setup .dev.env with your credentials
+- create googleapi_credentials.json in the root. you should get this file from googles dashboard for developers
+- change the POSTGRESQL_URL variable in makefile for the url you will be using
+- make setup
+- make migrate_up
+- make
