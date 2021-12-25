@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS songs_covers CASCADE;

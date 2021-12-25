@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS user_roles CASCADE;
+DROP INDEX IF EXISTS idx_users_roles;

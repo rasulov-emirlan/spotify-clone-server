@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS denied_songs CASCADE;
+DROP INDEX IF EXISTS idx_denied_songs;
