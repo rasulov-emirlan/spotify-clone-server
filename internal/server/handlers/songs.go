@@ -70,7 +70,7 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			return err
 		}
 
-		songurl, err := fs.CreatePublicLink(songid)
+		_, err = fs.CreatePublicLink(songid)
 		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
@@ -83,7 +83,9 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			return err
 		}
 
-		c.JSON(http.StatusOK, songurl)
+		respondWithData(http.StatusAccepted, "we uploaded your song", jsonMapper{
+			"songID": songid,
+		}, c)
 		return nil
 	}
 }
