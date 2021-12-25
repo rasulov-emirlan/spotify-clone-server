@@ -52,13 +52,6 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			},
 		}
 
-		song.UUIDurl()
-
-		if err := store.Song().Create(&song); err != nil {
-			throwError(http.StatusInternalServerError, "unable to save info into database", err, c)
-			return err
-		}
-
 		// if err := song.UploadSong(audio, cover); err != nil {
 		// 	throwError(http.StatusInternalServerError, "unable to save audio file into database", err, c)
 		// 	return err
@@ -69,11 +62,28 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			throwError(http.StatusInternalServerError, "unable to decode audiofile", err, c)
 			return err
 		}
-		if err := fs.UploadFile(song.Title, audio.Header["Content-Type"][0], a, "1jblmQQe2Izf5L1hSVRIKTtsdQi00i0ia"); err != nil {
+		defer a.Close()
+
+		songid, err := fs.UploadFile(song.Title, audio.Header["Content-Type"][0], a, "1jblmQQe2Izf5L1hSVRIKTtsdQi00i0ia")
+		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
 		}
-		c.JSON(http.StatusOK, "we uploaded your song")
+
+		songurl, err := fs.CreatePublicLink(songid)
+		if err != nil {
+			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
+			return err
+		}
+
+		song.URL = songid
+
+		if err := store.Song().Create(&song); err != nil {
+			throwError(http.StatusInternalServerError, "unable to save info into database", err, c)
+			return err
+		}
+
+		c.JSON(http.StatusOK, songurl)
 		return nil
 	}
 }

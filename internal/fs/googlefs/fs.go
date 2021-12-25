@@ -44,14 +44,26 @@ func NewFileSystem() (fs.FileSystem, error) {
 	}, nil
 }
 
-func (fs *FileSystem) UploadFile(name string, mimeType string, content io.Reader, folderName string) error {
+func (fs *FileSystem) UploadFile(name string, mimeType string, content io.Reader, folderName string) (string, error) {
 	f := &drive.File{
 		MimeType: mimeType,
 		Name:     name,
-		Parents:  []string{folderName},
+		Parents:  []string{},
 	}
-	_, err := fs.service.Files.Create(f).Media(content).Do()
-	return err
+	file, err := fs.service.Files.Create(f).Media(content).Do()
+
+	return file.Id, err
+}
+
+func (fs *FileSystem) CreatePublicLink(fileID string) (string, error) {
+	_, err := fs.service.Permissions.Create(fileID, &drive.Permission{
+		Role: "reader",
+		Type: "anyone",
+	}).Do()
+	if err != nil {
+		return "", err
+	}
+	return "https://docs.google.com/uc?export=download&id=" + fileID, err
 }
 
 func (fs *FileSystem) DeleteFile(filename string) error {
