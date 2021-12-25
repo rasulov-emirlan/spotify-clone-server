@@ -11,6 +11,8 @@ require (
 	github.com/swaggo/echo-swagger v1.1.4
 	github.com/swaggo/swag v1.7.6
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
+	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
+	google.golang.org/api v0.63.0
 )
 
 require (
@@ -29,9 +31,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/tools v0.1.7 // indirect
-	google.golang.org/api v0.63.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb // indirect
 	google.golang.org/grpc v1.43.0 // indirect
