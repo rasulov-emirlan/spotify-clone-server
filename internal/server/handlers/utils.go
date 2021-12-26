@@ -12,7 +12,18 @@ type responseMessage struct {
 	Data    interface{} `json:"data"`
 }
 
+type jsonMapper map[string]interface{}
+
 func throwError(code int, msg string, data interface{}, c echo.Context) {
+	c.JSON(code, responseMessage{
+		Code:    code,
+		Message: msg,
+		Data:    data,
+	})
+	log.Println(data)
+}
+
+func respondWithData(code int, msg string, data interface{}, c echo.Context) {
 	c.JSON(code, responseMessage{
 		Code:    code,
 		Message: msg,

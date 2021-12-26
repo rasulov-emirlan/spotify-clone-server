@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS genres CASCADE;
+DROP INDEX IF EXISTS idx_genres_id;

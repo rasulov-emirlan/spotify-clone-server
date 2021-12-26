@@ -19,7 +19,7 @@ func (r *PlaylistRepository) Create(p *models.Playlist) error {
 
 func (r *PlaylistRepository) UsersPlaylists(userID int) ([]models.Playlist, error) {
 	rows, err := r.db.Query(`
-	SELECT p.id, p.name, u.name as username
+	SELECT p.id, p.name, u.username
 	FROM playlists AS p
 	INNER JOIN users AS u
 	ON p.user_id = u.id
@@ -47,8 +47,8 @@ func (r *PlaylistRepository) UsersPlaylists(userID int) ([]models.Playlist, erro
 			ID:   id,
 			Name: name,
 			Author: models.User{
-				ID:   userID,
-				Name: username,
+				ID:       userID,
+				UserName: username,
 			},
 		})
 	}
@@ -65,7 +65,7 @@ func (r *PlaylistRepository) AddSong(songID int, playlistID int) error {
 
 func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
 	rows, err := r.db.Query(`
-	SELECT p.id, p.name, p.user_id, u.name as username
+	SELECT p.id, p.name, p.user_id, u.username
 	FROM playlists as p
 	INNER JOIN users as u
 	ON p.user_id = u.id
@@ -93,8 +93,8 @@ func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
 			ID:   id,
 			Name: name,
 			Author: models.User{
-				ID:   id,
-				Name: username,
+				ID:       id,
+				UserName: username,
 			},
 		})
 	}
@@ -102,15 +102,13 @@ func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
 }
 func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Song, error) {
 	rows, err := r.db.Query(`
-	SELECT s.id, s.title, s.author_id, s.url, sc.url as cover_url, u.name as username
+	SELECT s.id, s.name, s.author_id, s.song_url, s.cover_picture_url as cover_url, u.username
 	FROM songs AS s
-	INNER JOIN songs_covers AS sc
-	ON sc.song_id = s.id
 	INNER JOIN users as u
 	ON s.author_id = u.id
 	WHERE s.id IN(
 		SELECT ps.song_id
-		FROM songs_playlists AS ps
+		FROM playlists_songs AS ps
 		WHERE ps.playlist_id = $1
 	);
 	`, playlistID)
@@ -122,12 +120,12 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Son
 	var songs []models.Song
 
 	var id, authorId int
-	var title, url, coverUrl, username string
+	var name, url, coverUrl, username string
 
 	for rows.Next() {
 		if err := rows.Scan(
 			&id,
-			&title,
+			&name,
 			&authorId,
 			&url,
 			&coverUrl,
@@ -137,8 +135,8 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Son
 		}
 		songs = append(songs, models.Song{
 			ID:       id,
-			Title:    title,
-			Author:   models.User{ID: authorId, Name: username},
+			Name:     name,
+			Author:   models.User{ID: authorId, UserName: username},
 			URL:      url,
 			CoverURL: coverUrl})
 	}

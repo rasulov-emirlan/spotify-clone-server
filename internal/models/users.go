@@ -9,16 +9,19 @@ import (
 )
 
 type User struct {
-	ID       int    `json:"id" example:"0"`
-	Name     string `json:"name" example:"John Doe"`
-	Password string `json:"-" example:"QWERTY123"`
-	Email    string `json:"-" example:"john@gmail.com"`
+	ID        int    `json:"id" example:"0"`
+	UserName  string `json:"username" example:"johny"`
+	FullName  string `json:"name" example:"John Doe"`
+	BirthDate string `json:"birth_date" example:"2000-01-01"`
+	Password  string `json:"-" example:"QWERTY123"`
+	Email     string `json:"-" example:"john@gmail.com"`
 }
 
 func TestUser() *User {
 	return &User{
 		ID:       1,
-		Name:     "John Doe",
+		UserName: "johny",
+		FullName: "John Doe",
 		Password: "123",
 		Email:    "johndoe@gmail.com",
 	}
@@ -49,7 +52,8 @@ func (u *User) GenerateJWT(jwtSecretKey string) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	claims["name"] = u.Name
+	claims["username"] = u.UserName
+	claims["fullname"] = u.FullName
 	claims["userid"] = u.ID
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 

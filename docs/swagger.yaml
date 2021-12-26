@@ -4,14 +4,20 @@ consumes:
 definitions:
   handlers.authRequest:
     properties:
+      birth_date:
+        example: "2000-01-01"
+        type: string
       email:
         example: john@gmai.com
         type: string
-      name:
+      full_name:
         example: Johny Cash
         type: string
       password:
         example: "123456"
+        type: string
+      username:
+        example: Johnny
         type: string
     type: object
   handlers.authResponse:
@@ -291,9 +297,9 @@ paths:
         name: cover
         required: true
         type: file
-      - description: The title for that song
+      - description: The name for that song
         in: formData
-        name: title
+        name: name
         required: true
         type: string
       produces:

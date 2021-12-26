@@ -11,19 +11,15 @@ type SongRepository struct {
 
 func (r *SongRepository) Create(s *models.Song) error {
 	return r.db.QueryRow(`
-	WITH Y as (INSERT INTO songs(title, author_id, url)
-	VALUES($1, $2, $3)
-	RETURNING id)
-	INSERT INTO songs_covers(song_id, url)
-	SELECT id, $4
-	FROM Y
-	RETURNING song_id;
-	`, s.Title, s.Author.ID, s.URL, s.CoverURL).Scan(&s.ID)
+	INSERT INTO songs(name, author_id, cover_picture_url, song_url)
+	VALUES($1, $2, $3, $4)
+	RETURNING id;
+	`, s.Name, s.Author.ID, s.CoverURL, s.URL).Scan(&s.ID)
 }
 
 func (r *SongRepository) FindByID(id int) (*models.Song, error) {
 	rows, err := r.db.Query(`
-	SELECT id, title, author_id, url
+	SELECT id, name, author_id, song_url
 	FROM songs
 	WHERE id = $1;
 	`, id)
@@ -35,7 +31,7 @@ func (r *SongRepository) FindByID(id int) (*models.Song, error) {
 	if rows.Next() {
 		rows.Scan(
 			&result.ID,
-			&result.Title,
+			&result.Name,
 			&result.Author.ID,
 			&result.URL,
 		)
@@ -50,12 +46,10 @@ func (song *SongRepository) DeleteByID(id int) error {
 func (r *SongRepository) GetSongs(from, to int) ([]models.Song, error) {
 	limit := to - from
 	rows, err := r.db.Query(`
-	SELECT  s.id, s.title, s.url, sc.url as cover_url, s.author_id, u.name as username
+	SELECT  s.id, s.name, s.song_url, s.cover_picture_url as cover_url, s.author_id, u.username
 	FROM songs as s
 	INNER JOIN users as u
 	ON u.id = s.author_id
-	INNER JOIN songs_covers as sc
-		ON sc.song_id = s.id
 		Limit $1 offset $2;
 	`, limit, from)
 
@@ -65,12 +59,12 @@ func (r *SongRepository) GetSongs(from, to int) ([]models.Song, error) {
 
 	var songs []models.Song
 	var id, userid int
-	var title, username, url, coverUrl string
+	var name, username, url, coverUrl string
 
 	for rows.Next() {
 		if err := rows.Scan(
 			&id,
-			&title,
+			&name,
 			&url,
 			&coverUrl,
 			&userid,
@@ -80,12 +74,12 @@ func (r *SongRepository) GetSongs(from, to int) ([]models.Song, error) {
 		}
 		songs = append(songs, models.Song{
 			ID:       id,
-			Title:    title,
+			Name:     name,
 			URL:      url,
 			CoverURL: coverUrl,
 			Author: models.User{
-				ID:   userid,
-				Name: username,
+				ID:       userid,
+				UserName: username,
 			},
 		})
 	}

@@ -5,6 +5,8 @@ import (
 	"log"
 	"spotify-clone/server/config"
 	_ "spotify-clone/server/docs"
+	"spotify-clone/server/internal/fs"
+	"spotify-clone/server/internal/fs/googlefs"
 	"spotify-clone/server/internal/server/handlers"
 	"spotify-clone/server/internal/store"
 	"spotify-clone/server/internal/store/sqlstore"
@@ -30,6 +32,7 @@ import (
 type Server struct {
 	Router *echo.Echo
 	Store  store.Store
+	FS     fs.FileSystem
 	JWTkey string
 }
 
@@ -48,10 +51,15 @@ func New() (*Server, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fs, err := googlefs.NewFileSystem()
+	if err != nil {
+		log.Fatal(err)
+	}
 	e := echo.New()
 	return &Server{
 		Router: e,
 		Store:  s,
+		FS:     fs,
 		JWTkey: jwtkey,
 	}, nil
 }
@@ -83,7 +91,7 @@ func (s *Server) plugRoutes() error {
 	})
 	songs := s.Router.Group("/songs")
 	{
-		songs.POST("", handlers.SongsCreate(s.Store), middleware.JWT([]byte(s.JWTkey)))
+		songs.POST("", handlers.SongsCreate(s.Store, s.FS), middleware.JWT([]byte(s.JWTkey)))
 		songs.GET("", handlers.SongsFromAtoB(s.Store))
 	}
 
