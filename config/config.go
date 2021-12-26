@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 func NewSQLDBlink() (string, error) {
@@ -68,10 +66,10 @@ func NewSQLDBconfig() (string, error) {
 // of the package that you are testing
 // !!!dont specify reall data in ".test.env" use some mockups
 func NewTESTSQLDBconfig() (string, error) {
-	err := godotenv.Load(".dev.test.env")
-	if err != nil {
-		return "", err
-	}
+	// err := godotenv.Load(".dev.test.env")
+	// if err != nil {
+	// 	return "", err
+	// }
 
 	type dbconfig struct {
 		DBhost     string
