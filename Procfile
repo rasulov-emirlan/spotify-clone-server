@@ -1,1 +1,1 @@
-web: sp-clone-server
+web: ./
