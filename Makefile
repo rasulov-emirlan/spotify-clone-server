@@ -26,9 +26,4 @@ setup:
 	go mod tidy
 	go install github.com/swaggo/swag/cmd/swag@latest
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-	migrate -database ${POSTGRESQL_URL} -path ./migrations/db/migrations up 
-	cd ../
-	mkdir database
-	cd database
-	mkdir audio
-	mkdir covers
+	# migrate -database ${POSTGRESQL_URL} -path ./migrations/db/migrations up 

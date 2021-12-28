@@ -27,14 +27,8 @@ func TestUser() *User {
 		Password:  "123",
 		Email:     "johndoe@gmail.com",
 		Roles: Roles{
-			{
-				ID:   1,
-				Name: "admin",
-			},
-			{
-				ID:   2,
-				Name: "singer",
-			},
+			"admin",
+			"singer",
 		},
 	}
 }

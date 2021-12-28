@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"spotify-clone/server/internal/fs"
 	"spotify-clone/server/internal/models"
@@ -15,6 +17,10 @@ type songRequest struct {
 	Title string `json:""`
 }
 
+var (
+	errNotASinger = errors.New("Not a verified singer")
+)
+
 // SongsCreate docs
 // @Tags		songs
 // @Summary		Upload a song
@@ -26,6 +32,7 @@ type songRequest struct {
 // @Param		cover			formData	file			true    "The cover for the song"
 // @Param		name			formData	string			true    "The name for that song"
 // @Success		200 	"we uploaded your song"
+// @Fail		400		"not a verified singer"
 // @Router		/songs	[post]
 func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -33,6 +40,19 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 		token := user.(*jwt.Token)
 
 		claims := token.Claims.(jwt.MapClaims)
+		ifSinger := false
+		for _, role := range claims["roles"].([]interface{}) {
+			fmt.Println(role)
+			if role == "singer" {
+				ifSinger = true
+				break
+			}
+		}
+		if !ifSinger {
+			throwError(http.StatusBadRequest, "you are not a verified singer, thus cannot upload your songs", errNotASinger, c)
+			return errNotASinger
+		}
+
 		name := c.FormValue("name")
 
 		audio, err := c.FormFile("audio")
@@ -79,7 +99,7 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			return err
 		}
 
-		coverid, err := fs.UploadFile(song.Name, audio.Header["Content-Type"][0], b, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
+		coverid, err := fs.UploadFile(song.Name, cover.Header["Content-Type"][0], b, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
 		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err

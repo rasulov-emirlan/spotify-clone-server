@@ -97,7 +97,7 @@ func (s *Server) plugRoutes() error {
 
 	playlists := s.Router.Group("/playlists")
 	{
-		playlists.POST("", handlers.PlaylistsCreate(s.Store), middleware.JWT([]byte(s.JWTkey)))
+		playlists.POST("", handlers.PlaylistsCreate(s.Store, s.FS), middleware.JWT([]byte(s.JWTkey)))
 		playlists.GET("", handlers.ListAllPlaylists(s.Store))
 		playlists.GET("/:id", handlers.GetSongsFromPlaylist(s.Store))
 		playlists.PUT("", handlers.PlaylistsAddSong(s.Store), middleware.JWT([]byte(s.JWTkey)))
@@ -117,7 +117,6 @@ func (s *Server) plugRoutes() error {
 		auth.POST("/login", handlers.UserLogin(s.Store, s.JWTkey))
 	}
 	s.Router.GET("/swagger/*", echoSwagger.WrapHandler)
-	s.Router.Static("/database/", "../database/")
 
 	return nil
 }

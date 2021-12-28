@@ -37,7 +37,7 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 	rows, err := r.db.Query(`
-	SELECT r.id, r.name
+	SELECT r.name
 	FROM users_roles ur
 	INNER JOIN roles r
 		ON ur.role_id = r.id
@@ -46,18 +46,13 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	var roleid int
 	var role string
 
 	for rows.Next() {
 		rows.Scan(
 			&role,
-			&roleid,
 		)
-		u.Roles = append(u.Roles, &models.Role{
-			ID:   roleid,
-			Name: role,
-		})
+		u.Roles = append(u.Roles,role)
 	}
 	return &u, err
 }

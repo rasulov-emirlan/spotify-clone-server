@@ -9,10 +9,11 @@ import (
 )
 
 var isFromFile bool = true
+var filepath string = ".dev.env"
 
 func NewSQLDBlink() (string, error) {
 	if isFromFile {
-		err := godotenv.Load(".dev.env")
+		err := godotenv.Load(filepath)
 		if err != nil {
 			return "", err
 		}
@@ -23,7 +24,7 @@ func NewSQLDBlink() (string, error) {
 }
 func NewPortForServer() (string, error) {
 	if isFromFile {
-		err := godotenv.Load(".dev.env")
+		err := godotenv.Load(filepath)
 		if err != nil {
 			return "", err
 		}
@@ -34,7 +35,7 @@ func NewPortForServer() (string, error) {
 
 func NewJWTToken() (string, error) {
 	if isFromFile {
-		err := godotenv.Load(".dev.env")
+		err := godotenv.Load(filepath)
 		if err != nil {
 			return "", err
 		}
@@ -47,7 +48,7 @@ func NewJWTToken() (string, error) {
 // and it reads it from the repository that you are executing the application
 func NewSQLDBconfig() (string, error) {
 	if isFromFile {
-		err := godotenv.Load(".dev.env")
+		err := godotenv.Load(filepath)
 		if err != nil {
 			return "", err
 		}
@@ -79,7 +80,7 @@ func NewSQLDBconfig() (string, error) {
 // !!!dont specify reall data in ".test.env" use some mockups
 func NewTESTSQLDBconfig() (string, error) {
 	if isFromFile {
-		err := godotenv.Load(".dev.env")
+		err := godotenv.Load(filepath)
 		if err != nil {
 			return "", err
 		}
