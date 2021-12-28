@@ -1,1 +1,1 @@
-web: /bin/apiserver
+web: ./bin/apiserver
