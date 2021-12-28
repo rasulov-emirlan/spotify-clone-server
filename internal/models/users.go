@@ -15,15 +15,27 @@ type User struct {
 	BirthDate string `json:"birth_date" example:"2000-01-01"`
 	Password  string `json:"-" example:"QWERTY123"`
 	Email     string `json:"-" example:"john@gmail.com"`
+	Roles     Roles  `json:"roles"`
 }
 
 func TestUser() *User {
 	return &User{
-		ID:       1,
-		UserName: "johny",
-		FullName: "John Doe",
-		Password: "123",
-		Email:    "johndoe@gmail.com",
+		ID:        1,
+		UserName:  "johny",
+		FullName:  "John Doe",
+		BirthDate: "2006-01-01",
+		Password:  "123",
+		Email:     "johndoe@gmail.com",
+		Roles: Roles{
+			{
+				ID:   1,
+				Name: "admin",
+			},
+			{
+				ID:   2,
+				Name: "singer",
+			},
+		},
 	}
 }
 
@@ -55,6 +67,7 @@ func (u *User) GenerateJWT(jwtSecretKey string) (string, error) {
 	claims["username"] = u.UserName
 	claims["fullname"] = u.FullName
 	claims["userid"] = u.ID
+	claims["roles"] = u.Roles
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	return token.SignedString([]byte(jwtSecretKey))
