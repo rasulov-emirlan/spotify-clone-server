@@ -81,7 +81,11 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 func (s *Server) plugRoutes() error {
 	s.Router.Pre(middleware.RemoveTrailingSlash())
-	s.Router.Use(middleware.CORS())
+	s.Router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"*"},
+		AllowHeaders: []string{"*"},
+	}))
 	s.Router.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
 	}))
