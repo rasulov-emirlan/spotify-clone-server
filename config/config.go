@@ -4,31 +4,42 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
+var isFromFile bool = true
+var filepath string = ".dev.env"
+
 func NewSQLDBlink() (string, error) {
-	// err := godotenv.Load(".dev.env")
-	// if err != nil {
-	// 	return "", err
-	// }
+	if isFromFile {
+		err := godotenv.Load(filepath)
+		if err != nil {
+			return "", err
+		}
+	}
 	link := os.Getenv("DBLINK")
 	return link, nil
 
 }
 func NewPortForServer() (string, error) {
-	// err := godotenv.Load(".dev.env")
-	// if err != nil {
-	// 	return "", err
-	// }
+	if isFromFile {
+		err := godotenv.Load(filepath)
+		if err != nil {
+			return "", err
+		}
+	}
 	port := os.Getenv("PORT")
 	return port, nil
 }
 
 func NewJWTToken() (string, error) {
-	// err := godotenv.Load(".dev.env")
-	// if err != nil {
-	// 	return "", err
-	// }
+	if isFromFile {
+		err := godotenv.Load(filepath)
+		if err != nil {
+			return "", err
+		}
+	}
 	key := os.Getenv("JWTKEY")
 	return key, nil
 }
@@ -36,10 +47,12 @@ func NewJWTToken() (string, error) {
 // NewSQLDBconfig: this function reads config data from ".env" file
 // and it reads it from the repository that you are executing the application
 func NewSQLDBconfig() (string, error) {
-	// err := godotenv.Load(".dev.env")
-	// if err != nil {
-	// 	return "", err
-	// }
+	if isFromFile {
+		err := godotenv.Load(filepath)
+		if err != nil {
+			return "", err
+		}
+	}
 
 	type dbconfig struct {
 		DBhost     string
@@ -66,10 +79,12 @@ func NewSQLDBconfig() (string, error) {
 // of the package that you are testing
 // !!!dont specify reall data in ".test.env" use some mockups
 func NewTESTSQLDBconfig() (string, error) {
-	// err := godotenv.Load(".dev.test.env")
-	// if err != nil {
-	// 	return "", err
-	// }
+	if isFromFile {
+		err := godotenv.Load(filepath)
+		if err != nil {
+			return "", err
+		}
+	}
 
 	type dbconfig struct {
 		DBhost     string

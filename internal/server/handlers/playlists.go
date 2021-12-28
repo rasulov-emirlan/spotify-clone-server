@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"spotify-clone/server/internal/fs"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
 	"strconv"
@@ -24,29 +25,53 @@ type playlistCreateResponse struct {
 // @Description	Creates a new playlist that can be accesed by anyone but only you can edit it
 // @Accept		json
 // @Produce		json
-// @Param		Authorization	header		string			true	"JWToken for auth"
-// @Param       name            body        playlistCreateRequest          true     "The name of the playlist"
+// @Param		Authorization	header		string		true	"JWToken for auth"
+// @Param       name            formData	string		true	"The name of the playlist"
+// @Param       cover			formData	file		true	"The name of the playlist"
 // @Success		200 	"we created your playlist"
 // @Router		/playlists	[post]
-func PlaylistsCreate(store store.Store) echo.HandlerFunc {
+func PlaylistsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		req := &playlistCreateRequest{}
-		if err := c.Bind(req); err != nil {
-			throwError(http.StatusBadRequest, "could not decode json", err, c)
-			return err
-		}
 
 		user := c.Get("user")
 		token := user.(*jwt.Token)
 
 		claims := token.Claims.(jwt.MapClaims)
 
+		cover, err := c.FormFile("cover")
+		if err != nil {
+			throwError(http.StatusBadRequest, "could not decode image for cover", err, c)
+			return err
+		}
+		coverfile, err := cover.Open()
+		if err != nil {
+			throwError(http.StatusBadRequest, "could not open image for cover", err, c)
+			return err
+		}
+
+		name := c.FormValue("name")
+
 		playlist := &models.Playlist{
-			Name: req.Name,
+			Name: name,
 			Author: models.User{
 				ID: int(claims["userid"].(float64)),
 			},
 		}
+
+		// 😅 this esoteric looking string is an id for folder in  google drive💿
+		coverid, err := fs.UploadFile(playlist.Name, cover.Header["Content-Type"][0], coverfile, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
+		if err != nil {
+			throwError(http.StatusInternalServerError, "could not upload cover to our server", err, c)
+			return err
+		}
+
+		coverlink, err := fs.CreatePublicLink(coverid)
+		if err != nil {
+			throwError(http.StatusInternalServerError, "could not create a public link", err, c)
+			return err
+		}
+
+		playlist.CoverUrl = coverlink
 
 		if err := store.Playlist().Create(playlist); err != nil {
 			throwError(http.StatusInternalServerError, "our database did not like your info", err, c)
@@ -65,8 +90,8 @@ func PlaylistsCreate(store store.Store) echo.HandlerFunc {
 // @Accept		json
 // @Produce		json
 // @Param		Authorization	header		string			true	"JWToken for auth"
-// @Param       playlist_id            query        int          true     "The id for the playlist"
-// @Param       song_id            query        int          true     "The id for the song"
+// @Param       playlist		query		int          true     "The id for the playlist"
+// @Param       song			query		int          true     "The id for the song"
 // @Success		200 	"we created your playlist"
 // @Router		/playlists	[put]
 func PlaylistsAddSong(store store.Store) echo.HandlerFunc {
@@ -98,7 +123,7 @@ func PlaylistsAddSong(store store.Store) echo.HandlerFunc {
 
 		for i := 0; i < len(playlists); i++ {
 			if playlists[i].ID == playlistID {
-				if err := store.Playlist().AddSong(playlistID, songID); err != nil {
+				if err := store.Playlist().AddSong(songID, playlistID); err != nil {
 					throwError(http.StatusInternalServerError, "database did not like your data", err, c)
 					return err
 				}

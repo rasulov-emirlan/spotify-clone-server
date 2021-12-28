@@ -30,12 +30,6 @@ definitions:
       name:
         type: string
     type: object
-  handlers.playlistCreateRequest:
-    properties:
-      name:
-        example: my favorites
-        type: string
-    type: object
 host: localhost:8080
 info:
   contact:
@@ -192,11 +186,15 @@ paths:
         required: true
         type: string
       - description: The name of the playlist
-        in: body
+        in: formData
         name: name
         required: true
-        schema:
-          $ref: '#/definitions/handlers.playlistCreateRequest'
+        type: string
+      - description: The name of the playlist
+        in: formData
+        name: cover
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -218,12 +216,12 @@ paths:
         type: string
       - description: The id for the playlist
         in: query
-        name: playlist_id
+        name: playlist
         required: true
         type: integer
       - description: The id for the song
         in: query
-        name: song_id
+        name: song
         required: true
         type: integer
       produces:
