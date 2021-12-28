@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var isFromFile bool = true
+var isFromFile bool = false
 var filepath string = ".dev.env"
 
 func NewSQLDBlink() (string, error) {
