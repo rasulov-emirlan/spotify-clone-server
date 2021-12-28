@@ -19,7 +19,7 @@ func (r *UserRepository) Create(u *models.User) error {
 func (r *UserRepository) FindByID(id int) (*models.User, error) {
 	var u models.User
 	err := r.db.QueryRow(`
-	select id, username, email
+	select id, username, password, email
 	from users
 	where id=$1;
 	`, id).Scan(&u.ID, &u.UserName, &u.Email)
@@ -33,6 +33,27 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	from users
 	where email = $1;
 	`, email).Scan(&u.ID, &u.UserName, &u.Password, &u.Email)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := r.db.Query(`
+	SELECT r.name
+	FROM users_roles ur
+	INNER JOIN roles r
+		ON ur.role_id = r.id
+	WHERE ur.user_id = $1; 
+	`, u.ID)
+	if err != nil {
+		return nil, err
+	}
+	var role string
+
+	for rows.Next() {
+		rows.Scan(
+			&role,
+		)
+		u.Roles = append(u.Roles,role)
+	}
 	return &u, err
 }
 

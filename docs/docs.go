@@ -255,14 +255,14 @@ var doc = `{
                     {
                         "type": "integer",
                         "description": "The id for the playlist",
-                        "name": "playlist_id",
+                        "name": "playlist",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "The id for the song",
-                        "name": "song_id",
+                        "name": "song",
                         "in": "query",
                         "required": true
                     }
@@ -294,13 +294,18 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "type": "string",
                         "description": "The name of the playlist",
                         "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.playlistCreateRequest"
-                        }
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "The name of the playlist",
+                        "name": "cover",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -463,15 +468,6 @@ var doc = `{
             "properties": {
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "handlers.playlistCreateRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "my favorites"
                 }
             }
         }
