@@ -13,6 +13,7 @@ import (
 
 func main() {
 	port, err := config.NewPortForServer()
+	log.Println(port)
 	if err != nil {
 		log.Fatal(err)
 	}

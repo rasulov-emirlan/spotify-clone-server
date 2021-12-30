@@ -26,7 +26,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host https://sp-clone-server.herokuapp.com/
+// @host https://sp-clone-server.herokuapp.com
 // @BasePath /
 // @Accept json
 type Server struct {
@@ -43,6 +43,7 @@ func New() (*Server, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(dbconfig)
 	jwtkey, err := config.NewJWTToken()
 	if err != nil {
 		log.Fatal(err)

@@ -13,7 +13,7 @@ const filepath string = ".dev.env"
 
 const (
 	port       = "PORT"
-	dblink     = "DBLINK"
+	dblink     = "DATABASE_URL"
 	jwtKey     = "JWTKEY"
 	dbHost     = "DBHOST"
 	dbPort     = "DBPORT"
@@ -29,7 +29,7 @@ func NewSQLDBlink() (string, error) {
 			return "", err
 		}
 	}
-	link := os.Getenv("DBLINK")
+	link := os.Getenv(dblink)
 	return link, nil
 
 }

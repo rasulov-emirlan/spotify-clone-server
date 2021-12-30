@@ -30,7 +30,7 @@ definitions:
       name:
         type: string
     type: object
-host: https://sp-clone-server.herokuapp.com/
+host: https://sp-clone-server.herokuapp.com
 info:
   contact:
     email: rasulov-emirlan@gmail.com
