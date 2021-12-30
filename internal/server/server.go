@@ -10,6 +10,7 @@ import (
 	"spotify-clone/server/internal/server/handlers"
 	"spotify-clone/server/internal/store"
 	"spotify-clone/server/internal/store/sqlstore"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -81,14 +82,22 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func (s *Server) plugRoutes() error {
-	s.Router.Pre(middleware.RemoveTrailingSlash())
 	s.Router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"*"},
-		AllowHeaders: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderAccessControlAllowOrigin},
+		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
+	}))
+
+	// Echo instance
+	s.Router.Use(middleware.RemoveTrailingSlash())
+	s.Router.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
 	}))
 	s.Router.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
+		Skipper: func(c echo.Context) bool {
+			return strings.Contains(c.Request().URL.Path, "swagger")
+		},
 	}))
 
 	s.Router.GET("/ping", func(c echo.Context) error {
