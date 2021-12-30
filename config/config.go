@@ -39,6 +39,7 @@ func NewPortForServer() (string, error) {
 		if err != nil {
 			return "", err
 		}
+		log.Println("is from file")
 	}
 	p := os.Getenv(port)
 	return p, nil
