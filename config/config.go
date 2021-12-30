@@ -8,18 +8,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const isFromFile bool = true
+const isFromFile bool = false
 const filepath string = ".dev.env"
 
 const (
-	port = "PORT"
-	dblink = "DBLINK"
-	jwtKey = "JWTKEY"
-	dbHost = "DBHOST"
-	dbPort = "DBPORT"
-	dbUser = "DBUSER"
+	port       = "PORT"
+	dblink     = "DBLINK"
+	jwtKey     = "JWTKEY"
+	dbHost     = "DBHOST"
+	dbPort     = "DBPORT"
+	dbUser     = "DBUSER"
 	dbPassword = "DBPASSWORD"
-	dbName = "DBNAME"
+	dbName     = "DBNAME"
 )
 
 func NewSQLDBlink() (string, error) {
