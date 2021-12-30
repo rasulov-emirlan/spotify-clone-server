@@ -486,7 +486,7 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.1",
-	Host:        "localhost:8080",
+	Host:        "https://sp-clone-server.herokuapp.com/",
 	BasePath:    "/",
 	Schemes:     []string{},
 	Title:       "Spotify Clone Server",

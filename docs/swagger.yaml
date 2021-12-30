@@ -30,7 +30,7 @@ definitions:
       name:
         type: string
     type: object
-host: localhost:8080
+host: https://sp-clone-server.herokuapp.com/
 info:
   contact:
     email: rasulov-emirlan@gmail.com
