@@ -27,8 +27,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host https://sp-clone-server.herokuapp.com
-// @BasePath /
 // @Accept json
 type Server struct {
 	Router *echo.Echo
