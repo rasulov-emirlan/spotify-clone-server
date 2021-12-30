@@ -8,8 +8,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var isFromFile bool = false
-var filepath string = ".dev.env"
+const isFromFile bool = true
+const filepath string = ".dev.env"
+
+const (
+	port = "PORT"
+	dblink = "DBLINK"
+	jwtKey = "JWTKEY"
+	dbHost = "DBHOST"
+	dbPort = "DBPORT"
+	dbUser = "DBUSER"
+	dbPassword = "DBPASSWORD"
+	dbName = "DBNAME"
+)
 
 func NewSQLDBlink() (string, error) {
 	if isFromFile {
@@ -29,8 +40,8 @@ func NewPortForServer() (string, error) {
 			return "", err
 		}
 	}
-	port := os.Getenv("PORT")
-	return port, nil
+	p := os.Getenv(port)
+	return p, nil
 }
 
 func NewJWTToken() (string, error) {
@@ -40,8 +51,8 @@ func NewJWTToken() (string, error) {
 			return "", err
 		}
 	}
-	key := os.Getenv("JWTKEY")
-	return key, nil
+	k := os.Getenv(jwtKey)
+	return k, nil
 }
 
 // NewSQLDBconfig: this function reads config data from ".env" file
@@ -63,11 +74,11 @@ func NewSQLDBconfig() (string, error) {
 	}
 
 	conf := dbconfig{}
-	conf.DBhost = os.Getenv("DBHOST")
-	conf.DBport = os.Getenv("DBPORT")
-	conf.DBuser = os.Getenv("DBUSER")
-	conf.DBpassword = os.Getenv("DBPASSWORD")
-	conf.DBname = os.Getenv("DBNAME")
+	conf.DBhost = os.Getenv(dbHost)
+	conf.DBport = os.Getenv(dbPort)
+	conf.DBuser = os.Getenv(dbUser)
+	conf.DBpassword = os.Getenv(dbPassword)
+	conf.DBname = os.Getenv(dbName)
 
 	result := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", conf.DBhost, conf.DBport, conf.DBuser, conf.DBpassword, conf.DBname)
 	log.Println(result)
@@ -95,11 +106,11 @@ func NewTESTSQLDBconfig() (string, error) {
 	}
 
 	conf := dbconfig{}
-	conf.DBhost = os.Getenv("DBHOST")
-	conf.DBport = os.Getenv("DBPORT")
-	conf.DBuser = os.Getenv("DBUSER")
-	conf.DBpassword = os.Getenv("DBPASSWORD")
-	conf.DBname = os.Getenv("TESTDBNAME")
+	conf.DBhost = os.Getenv(dbHost)
+	conf.DBport = os.Getenv(dbPort)
+	conf.DBuser = os.Getenv(dbUser)
+	conf.DBpassword = os.Getenv(dbPassword)
+	conf.DBname = os.Getenv(dbName)
 
 	result := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", conf.DBuser, conf.DBpassword, conf.DBhost, conf.DBport, conf.DBname)
 	log.Println(result)
