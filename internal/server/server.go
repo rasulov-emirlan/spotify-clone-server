@@ -17,7 +17,7 @@ import (
 )
 
 // @title Spotify Clone Server
-// @version 1.0
+// @version 1.1
 // @description This is a backend server for spotify clone.
 
 // @contact.name Rasulov Emirlan
@@ -26,7 +26,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8080
+// @host https://sp-clone-server.herokuapp.com/
 // @BasePath /
 // @Accept json
 type Server struct {

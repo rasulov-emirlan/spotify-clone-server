@@ -93,21 +93,9 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			return err
 		}
 
-		_, err = fs.CreatePublicLink(songid)
-		if err != nil {
-			throwError(http.StatusInternalServerError, "unable to create a public link for the audiofle", err, c)
-			return err
-		}
-
 		coverid, err := fs.UploadFile(song.Name, cover.Header["Content-Type"][0], b, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
 		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
-			return err
-		}
-
-		_, err = fs.CreatePublicLink(coverid)
-		if err != nil {
-			throwError(http.StatusInternalServerError, "unable to create a public link for the imagefile", err, c)
 			return err
 		}
 

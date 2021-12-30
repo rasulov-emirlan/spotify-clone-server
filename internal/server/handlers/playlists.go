@@ -59,17 +59,12 @@ func PlaylistsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 		}
 
 		// 😅 this esoteric looking string is an id for folder in  google drive💿
-		coverid, err := fs.UploadFile(playlist.Name, cover.Header["Content-Type"][0], coverfile, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
+		coverlink, err := fs.UploadFile(playlist.Name, cover.Header["Content-Type"][0], coverfile, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
 		if err != nil {
 			throwError(http.StatusInternalServerError, "could not upload cover to our server", err, c)
 			return err
 		}
 
-		coverlink, err := fs.CreatePublicLink(coverid)
-		if err != nil {
-			throwError(http.StatusInternalServerError, "could not create a public link", err, c)
-			return err
-		}
 
 		playlist.CoverUrl = coverlink
 

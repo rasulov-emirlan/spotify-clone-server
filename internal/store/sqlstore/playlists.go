@@ -152,3 +152,10 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Son
 
 	return &songs, nil
 }
+
+func (r *PlaylistRepository) DeletePlaylist(playlistID int) error {
+	return r.db.QueryRow(`
+	DELETE FROM playlists
+		WHERE id = $1;
+	`, playlistID).Scan()
+}

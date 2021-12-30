@@ -51,11 +51,16 @@ func (fs *FileSystem) UploadFile(name string, mimeType string, content io.Reader
 		Parents:  []string{folderID},
 	}
 	file, err := fs.service.Files.Create(f).Media(content).Do()
+	if err != nil {
+		return "", err
+	}
 
-	return file.Id, err
+	fileLink, err := fs.сreatePublicLink(file.Id)
+
+	return fileLink, err
 }
 
-func (fs *FileSystem) CreatePublicLink(fileID string) (string, error) {
+func (fs *FileSystem) сreatePublicLink(fileID string) (string, error) {
 	_, err := fs.service.Permissions.Create(fileID, &drive.Permission{
 		Role: "reader",
 		Type: "anyone",
@@ -63,7 +68,7 @@ func (fs *FileSystem) CreatePublicLink(fileID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return "https://docs.google.com/uc?export=download&id=" + fileID, err
+	return fileID, err
 }
 
 func (fs *FileSystem) DeleteFile(filename string) error {

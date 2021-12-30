@@ -10,18 +10,25 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Create(u *models.User) error {
-	return r.db.QueryRow(`
-	insert into users (username, full_name, birth_date, password, email)
-	values($1, $2, $3, $4, $5) returning id;
-	`, u.UserName, u.FullName, u.BirthDate, u.Password, u.Email).Scan(&u.ID)
+	return r.db.QueryRow(
+		`
+		INSERT INTO users (username, full_name, birth_date, password, email)
+		VALUES($1, $2, $3, $4, $5) returning id;
+		`,
+		u.UserName,
+		u.FullName,
+		u.BirthDate,
+		u.Password,
+		u.Email,
+	).Scan(&u.ID)
 }
 
 func (r *UserRepository) FindByID(id int) (*models.User, error) {
 	var u models.User
 	err := r.db.QueryRow(`
-	select id, username, password, email
-	from users
-	where id=$1;
+	SELECT id, username, password, email
+	FROM users
+		WHERE id=$1;
 	`, id).Scan(&u.ID, &u.UserName, &u.Email)
 	return &u, err
 }
@@ -29,9 +36,9 @@ func (r *UserRepository) FindByID(id int) (*models.User, error) {
 func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	var u models.User
 	err := r.db.QueryRow(`
-	select id, username, password, email
-	from users
-	where email = $1;
+	SELECT id, username, password, email
+	FROM users
+		WHERE email = $1;
 	`, email).Scan(&u.ID, &u.UserName, &u.Password, &u.Email)
 	if err != nil {
 		return nil, err
@@ -41,7 +48,7 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	FROM users_roles ur
 	INNER JOIN roles r
 		ON ur.role_id = r.id
-	WHERE ur.user_id = $1; 
+		WHERE ur.user_id = $1; 
 	`, u.ID)
 	if err != nil {
 		return nil, err
@@ -52,11 +59,22 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 		rows.Scan(
 			&role,
 		)
-		u.Roles = append(u.Roles,role)
+		u.Roles = append(u.Roles, role)
 	}
 	return &u, err
 }
 
 func (r *UserRepository) BanByID(id int) error {
 	return nil
+}
+
+func (r *UserRepository) FindByName(name string) (*models.User, error) {
+	var u models.User
+
+	return &u, r.db.QueryRow(`
+	SELECT id, username, profile_picture_url
+	FROM users
+		WHERE username @@ to_tsquery('english', $1)
+	LIMIT 1;
+	`, name).Scan(&u.ID, &u.UserName, &u.ProfilePictureURL)
 }
