@@ -25,9 +25,8 @@ type authResponse struct {
 // @Tags         auth
 // @Accept	     json
 // @Param		 param  body        authRequest     true "Authorization request"
-// @Success		 200 	{object}	authResponse
+// @Success		 201	{object}	authResponse
 // @Produce      json
-// @Success      200  "json web token"
 // @Router       /auth/register [post]
 func UserRegistration(store store.Store, JWTkey string) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -73,7 +72,7 @@ func UserRegistration(store store.Store, JWTkey string) echo.HandlerFunc {
 			return err
 		}
 
-		c.JSON(http.StatusOK, authResponse{Token: token})
+		c.JSON(http.StatusCreated, authResponse{Token: token})
 		return nil
 	}
 }
@@ -84,9 +83,8 @@ func UserRegistration(store store.Store, JWTkey string) echo.HandlerFunc {
 // @Tags         auth
 // @Accept	     json
 // @Param		 param  body        authRequest     true "Authorization request"
-// @Success		 200 	{object}	authResponse
 // @Produce      json
-// @Success      200  "json web token"
+// @Success		 201	{object}	authResponse
 // @Router       /auth/login [post]
 func UserLogin(store store.Store, JWTkey string) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -114,7 +112,7 @@ func UserLogin(store store.Store, JWTkey string) echo.HandlerFunc {
 			return err
 		}
 
-		c.JSON(http.StatusOK, authResponse{Token: token})
+		c.JSON(http.StatusAccepted, authResponse{Token: token})
 		return nil
 	}
 }

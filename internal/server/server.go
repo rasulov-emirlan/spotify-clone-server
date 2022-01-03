@@ -86,7 +86,6 @@ func (s *Server) plugRoutes() error {
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
 
-	// Echo instance
 	s.Router.Use(middleware.RemoveTrailingSlash())
 	s.Router.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize: 1 << 10, // 1 KB
@@ -98,29 +97,45 @@ func (s *Server) plugRoutes() error {
 		},
 	}))
 
+	jwtmiddleware := middleware.JWT([]byte(s.JWTkey))
+
 	s.Router.GET("/ping", func(c echo.Context) error {
 		return c.JSON(200, "pong")
 	})
+
 	songs := s.Router.Group("/songs")
 	{
-		songs.POST("", handlers.SongsCreate(s.Store, s.FS), middleware.JWT([]byte(s.JWTkey)))
+		songs.POST("", handlers.SongsCreate(s.Store, s.FS), jwtmiddleware)
 		songs.GET("", handlers.SongsFromAtoB(s.Store))
 	}
 
 	playlists := s.Router.Group("/playlists")
 	{
-		playlists.POST("", handlers.PlaylistsCreate(s.Store, s.FS), middleware.JWT([]byte(s.JWTkey)))
+		playlists.POST("", handlers.PlaylistsCreate(s.Store, s.FS), jwtmiddleware)
 		playlists.GET("", handlers.ListAllPlaylists(s.Store))
 		playlists.GET("/:id", handlers.GetSongsFromPlaylist(s.Store))
-		playlists.PUT("", handlers.PlaylistsAddSong(s.Store), middleware.JWT([]byte(s.JWTkey)))
+		playlists.PUT("", handlers.PlaylistsAddSong(s.Store), jwtmiddleware)
 	}
 
 	genres := s.Router.Group("/genres")
 	{
-		genres.POST("/", handlers.GenresCreate(s.Store))
+		genres.POST("", handlers.GenresCreate(s.Store, s.FS), jwtmiddleware)
+		genres.PATCH("", handlers.GenresAddLocalization(s.Store), jwtmiddleware)
 		genres.PUT("", handlers.GenresAddSong(s.Store))
 		genres.GET("", handlers.ListAllGenres(s.Store))
 		genres.GET("/:genre", handlers.GenresSongs(s.Store))
+	}
+
+	languages := s.Router.Group("/languages")
+	{
+		languages.POST("", handlers.LanguagesCreate(s.Store), jwtmiddleware)
+		languages.GET("", handlers.LanguagesListAll(s.Store))
+	}
+
+	countries := s.Router.Group("/countries")
+	{
+		countries.POST("", handlers.CountriesCreate(s.Store), jwtmiddleware)
+		countries.GET("", handlers.CountriesListAll(s.Store))
 	}
 
 	auth := s.Router.Group("/auth")

@@ -28,6 +28,7 @@ func (r *SongRepository) FindByID(id int) (*models.Song, error) {
 	}
 
 	var result models.Song
+
 	if rows.Next() {
 		rows.Scan(
 			&result.ID,
@@ -43,7 +44,7 @@ func (song *SongRepository) DeleteByID(id int) error {
 	return nil
 }
 
-func (r *SongRepository) GetSongs(from, to int) ([]models.Song, error) {
+func (r *SongRepository) GetSongs(from, to int) ([]*models.Song, error) {
 	limit := to - from
 	rows, err := r.db.Query(`
 	SELECT  s.id, s.name, s.song_url, s.cover_picture_url as cover_url, s.author_id, u.username
@@ -57,9 +58,11 @@ func (r *SongRepository) GetSongs(from, to int) ([]models.Song, error) {
 		return nil, err
 	}
 
-	var songs []models.Song
-	var id, userid int
-	var name, username, url, coverUrl string
+	var (
+		songs                         []*models.Song
+		id, userid                    int
+		name, username, url, coverUrl string
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -72,7 +75,7 @@ func (r *SongRepository) GetSongs(from, to int) ([]models.Song, error) {
 		); err != nil {
 			return nil, err
 		}
-		songs = append(songs, models.Song{
+		songs = append(songs, &models.Song{
 			ID:       id,
 			Name:     name,
 			URL:      url,

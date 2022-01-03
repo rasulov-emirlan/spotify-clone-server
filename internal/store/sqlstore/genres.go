@@ -9,11 +9,17 @@ type GenreRepository struct {
 	db *sql.DB
 }
 
-func (r *GenreRepository) Create(g *models.Genre) error {
+func (r *GenreRepository) Create(g *models.Genre, languageID int) error {
 	return r.db.QueryRow(`
-	INSERT INTO genres (name)
-	VALUES($1) RETURNING id;
-	`, g.Name).Scan(&g.ID)
+	WITH tt as (
+		INSERT INTO genres (cover_picture_url)
+		VALUES ($1)
+		RETURNING id
+	)
+	INSERT INTO genres_localizations(genre_id, name, language_id)
+	VALUES((SELECT id FROM tt), $2, $3)
+	RETURNING genre_id;
+	`, g.CoverURL, g.Name, languageID).Scan(&g.ID)
 }
 
 func (r *GenreRepository) AddSong(songID, genreID int) error {
@@ -23,7 +29,14 @@ func (r *GenreRepository) AddSong(songID, genreID int) error {
 	`, songID, genreID).Err()
 }
 
-func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
+func (r *GenreRepository) AddLocalization(genreID, languageID int, name string) error {
+	return r.db.QueryRow(`
+	INSERT INTO genres_localizations(name, genre_id, language_id)
+	VALUES($1, $2, $3);
+	`, name, genreID, languageID).Err()
+}
+
+func (r *GenreRepository) GetSongs(genderID int) ([]*models.Song, error) {
 	rows, err := r.db.Query(`
 	SELECT s.id, s.name, u.username, s.author_id, s.song_url, s.cover_picture_url
 	FROM songs_genres AS sg
@@ -38,10 +51,11 @@ func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 		return nil, err
 	}
 
-	var songs []models.Song
-
-	var id, authorID int
-	var username, name, url, coverURL string
+	var (
+		songs                         []*models.Song
+		id, authorID                  int
+		username, name, url, coverURL string
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -51,7 +65,7 @@ func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 		}
 
 		songs = append(songs,
-			models.Song{
+			&models.Song{
 				ID:       id,
 				Name:     name,
 				URL:      url,
@@ -67,19 +81,24 @@ func (r *GenreRepository) GetSongs(genderID int) ([]models.Song, error) {
 	return songs, nil
 }
 
-func (r *GenreRepository) ListAll() ([]models.Genre, error) {
+func (r *GenreRepository) ListAll() ([]*models.Genre, error) {
 	rows, err := r.db.Query(`
-	SELECT id, name
-	FROM genres;
+	SELECT g.id, gl.name
+	FROM genres g
+	INNER JOIN genres_localizations gl
+		ON g.id = gl.genre_id
+	WHERE language_id = 1;
 	`)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var genres []models.Genre
-	var id int
-	var name string
+	var (
+		genres []*models.Genre
+		id     int
+		name   string
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -88,7 +107,7 @@ func (r *GenreRepository) ListAll() ([]models.Genre, error) {
 		); err != nil {
 			return nil, err
 		}
-		genres = append(genres, models.Genre{
+		genres = append(genres, &models.Genre{
 			ID:   id,
 			Name: name,
 		})

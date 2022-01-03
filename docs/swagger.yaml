@@ -24,9 +24,56 @@ definitions:
       token:
         type: string
     type: object
-  handlers.genresCreateRequest:
+  handlers.countriesCreateRquest:
     properties:
       name:
+        type: string
+    type: object
+  handlers.genresAddLocalizationRequest:
+    properties:
+      genre_id:
+        type: integer
+      lanugage_id:
+        type: integer
+      name:
+        type: string
+    type: object
+  handlers.languagesCreateRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  models.Country:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Song:
+    properties:
+      author:
+        $ref: '#/definitions/models.User'
+      cover_url:
+        type: string
+      id:
+        type: integer
+      length:
+        type: integer
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  models.User:
+    properties:
+      id:
+        example: 0
+        type: integer
+      profile_picture_url:
+        type: string
+      username:
+        example: johny
         type: string
     type: object
 info:
@@ -56,8 +103,10 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: json web token
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.authResponse'
       summary: Login user
       tags:
       - auth
@@ -76,11 +125,54 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: json web token
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.authResponse'
       summary: Register user
       tags:
       - auth
+  /countries:
+    get:
+      consumes:
+      - application/json
+      description: Returns all the countries in our database
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.Country'
+            type: array
+      summary: List countries
+      tags:
+      - countries
+    post:
+      consumes:
+      - application/json
+      description: Adds a new country to our database
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bearer jwt
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.countriesCreateRquest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 201 if we added your country
+      summary: Create country
+      tags:
+      - countries
   /genres:
     get:
       consumes:
@@ -96,23 +188,61 @@ paths:
       summary: List genres
       tags:
       - genres
-    post:
+    patch:
       consumes:
       - application/json
       description: Creates a new genre
       parameters:
+      - description: Bearer JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: A name for new genre
         in: body
-        name: name
+        name: param
         required: true
         schema:
-          $ref: '#/definitions/handlers.genresCreateRequest'
+          $ref: '#/definitions/handlers.genresAddLocalizationRequest'
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: we created your genre
       summary: Create a new genre
+      tags:
+      - genres
+    post:
+      consumes:
+      - multipart/form-data
+      description: Adds a new name for genre in a different language
+      parameters:
+      - description: Bearer JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: A name for new genre
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: LanguageID to specify language of a name
+        in: formData
+        name: languageID
+        required: true
+        type: integer
+      - description: Cover image for the genre
+        in: formData
+        name: cover
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: we created your genre
+      summary: Add a localization
       tags:
       - genres
     put:
@@ -157,6 +287,43 @@ paths:
       summary: Add a song
       tags:
       - genres
+  /languages:
+    get:
+      consumes:
+      - application/json
+      description: Returns an array of all languages in our database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we will give you an array of languages
+      summary: Get all languages
+      tags:
+      - languages
+    post:
+      consumes:
+      - application/json
+      description: Creates a new language
+      parameters:
+      - description: Bearer JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: A name for new genre
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.languagesCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: we created your language
+      summary: Create a new language
+      tags:
+      - languages
   /playlists:
     get:
       consumes:
@@ -174,7 +341,7 @@ paths:
       - playlists
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Creates a new playlist that can be accesed by anyone but only you
         can edit it
       parameters:
@@ -196,7 +363,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: we created your playlist
       summary: Create a playlist
       tags:
@@ -269,13 +436,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: here your songs
+          description: list of songs
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
       summary: Get songs
       tags:
       - songs
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Uploads a song and its cover with all the info about that song
       parameters:
       - description: JWToken for auth

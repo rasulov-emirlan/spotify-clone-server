@@ -17,7 +17,7 @@ func (r *PlaylistRepository) Create(p *models.Playlist) error {
 	`, p.Name, p.Author.ID, p.CoverUrl).Err()
 }
 
-func (r *PlaylistRepository) UsersPlaylists(userID int) ([]models.Playlist, error) {
+func (r *PlaylistRepository) UsersPlaylists(userID int) ([]*models.Playlist, error) {
 	rows, err := r.db.Query(`
 	SELECT p.id, p.name, u.username, p.cover_picture_url, is_album
 	FROM playlists AS p
@@ -30,11 +30,12 @@ func (r *PlaylistRepository) UsersPlaylists(userID int) ([]models.Playlist, erro
 		return nil, err
 	}
 
-	var playlists []models.Playlist
-
-	var id int
-	var name, username, coverUrl string
-	var isAlbum bool
+	var (
+		playlists                []*models.Playlist
+		id                       int
+		name, username, coverUrl string
+		isAlbum                  bool
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -46,7 +47,7 @@ func (r *PlaylistRepository) UsersPlaylists(userID int) ([]models.Playlist, erro
 		); err != nil {
 			return nil, err
 		}
-		playlists = append(playlists, models.Playlist{
+		playlists = append(playlists, &models.Playlist{
 			ID:   id,
 			Name: name,
 			Author: models.User{
@@ -68,7 +69,7 @@ func (r *PlaylistRepository) AddSong(songID int, playlistID int) error {
 	`, songID, playlistID).Err()
 }
 
-func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
+func (r *PlaylistRepository) ListAll() ([]*models.Playlist, error) {
 	rows, err := r.db.Query(`
 	SELECT p.id, p.name, p.author_id, u.username, is_album
 	FROM playlists as p
@@ -81,10 +82,12 @@ func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
 		return nil, err
 	}
 
-	var playlists []models.Playlist
-	var id, userID int
-	var name, username string
-	var isAlbum bool
+	var (
+		playlists      []*models.Playlist
+		id, userID     int
+		name, username string
+		isAlbum        bool
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -96,7 +99,7 @@ func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
 		); err != nil {
 			return nil, err
 		}
-		playlists = append(playlists, models.Playlist{
+		playlists = append(playlists, &models.Playlist{
 			ID:   id,
 			Name: name,
 			Author: models.User{
@@ -109,7 +112,7 @@ func (r *PlaylistRepository) ListAll() ([]models.Playlist, error) {
 	return playlists, nil
 }
 
-func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Song, error) {
+func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) ([]*models.Song, error) {
 	rows, err := r.db.Query(`
 	SELECT s.id, s.name, s.author_id, s.song_url, s.cover_picture_url as cover_url, u.username
 	FROM songs AS s
@@ -126,10 +129,11 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Son
 		return nil, err
 	}
 
-	var songs []models.Song
-
-	var id, authorId int
-	var name, url, coverUrl, username string
+	var (
+		songs                         []*models.Song
+		id, authorId                  int
+		name, url, coverUrl, username string
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -142,7 +146,7 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Son
 		); err != nil {
 			return nil, err
 		}
-		songs = append(songs, models.Song{
+		songs = append(songs, &models.Song{
 			ID:       id,
 			Name:     name,
 			Author:   models.User{ID: authorId, UserName: username},
@@ -150,7 +154,7 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) (*[]models.Son
 			CoverURL: coverUrl})
 	}
 
-	return &songs, nil
+	return songs, nil
 }
 
 func (r *PlaylistRepository) DeletePlaylist(playlistID int) error {

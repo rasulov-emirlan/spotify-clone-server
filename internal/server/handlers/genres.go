@@ -3,15 +3,92 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"spotify-clone/server/internal/fs"
+	"spotify-clone/server/internal/fs/googlefs"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
 	"strconv"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
-type genresCreateRequest struct {
-	Name string `json:"name"`
+// GenresCreate docs
+// @Tags		genres
+// @Summary		Add a localization
+// @Description	Adds a new name for genre in a different language
+// @Accept		mpfd
+// @Produce		json
+// @Param       Authorization	header		string		true   "Bearer JWT Token"
+// @Param       name			formData		string		true   "A name for new genre"
+// @Param       languageID		formData		int			true   "LanguageID to specify language of a name"
+// @Param       cover			formData		file		true   "Cover image for the genre"
+// @Success		201 	"we created your genre"
+// @Router		/genres	[post]
+func GenresCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := c.Get("user")
+		token := user.(*jwt.Token)
+
+		claims := token.Claims.(jwt.MapClaims)
+		check := false
+		for _, v := range claims["roles"].([]interface{}) {
+			if v == "admin" {
+				check = true
+				break
+			}
+		}
+		if !check {
+			throwError(http.StatusForbidden, "you have to be an admin to use this endpoint", nil, c)
+			return nil
+		}
+
+		cover, err := c.FormFile("cover")
+		if err != nil {
+			throwError(http.StatusBadRequest, "something is wrong with your file for cover", err, c)
+			return err
+		}
+		coverfile, err := cover.Open()
+		if err != nil {
+			throwError(http.StatusBadRequest, "could not open file for cover", err, c)
+			return err
+		}
+
+		name := c.FormValue("name")
+		languageID, err := strconv.Atoi(c.FormValue("languageID"))
+		if err != nil {
+			throwError(http.StatusBadRequest, "could not convert languageID into integer value", err, c)
+			return err
+		}
+
+		genre := &models.Genre{
+			Name: name,
+		}
+
+		coverlink, err := fs.UploadFile(genre.Name, cover.Header["Content-Type"][0], coverfile, googlefs.FolderCovers)
+		if err != nil {
+			throwError(http.StatusInternalServerError, "could not upload your image into our cloud", err, c)
+			return err
+		}
+
+		genre.CoverURL = coverlink
+
+		if err := store.Genre().Create(genre, languageID); err != nil {
+			throwError(http.StatusBadRequest, "our database did not like your data", err, c)
+			return err
+		}
+		return c.JSON(http.StatusCreated, responseMessage{
+			Code:    http.StatusCreated,
+			Message: "we have created your genre",
+			Data:    genre,
+		})
+	}
+}
+
+type genresAddLocalizationRequest struct {
+	GenreID    int    `json:"genre_id"`
+	Name       string `json:"name"`
+	LanugageID int    `json:"lanugage_id"`
 }
 
 // GenresCreate docs
@@ -20,31 +97,44 @@ type genresCreateRequest struct {
 // @Description	Creates a new genre
 // @Accept		json
 // @Produce		json
-// @Param       name              body       genresCreateRequest          true   "A name for new genre"
-// @Success		200 	"we created your genre"
-// @Router		/genres	[post]
-func GenresCreate(store store.Store) echo.HandlerFunc {
+// @Param       Authorization	header		string								true   "Bearer JWT Token"
+// @Param       param			body		genresAddLocalizationRequest		true   "A name for new genre"
+// @Success		201 	"we created your genre"
+// @Router		/genres	[patch]
+func GenresAddLocalization(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		user := c.Get("user")
+		token := user.(*jwt.Token)
 
-		req := &genresCreateRequest{}
+		claims := token.Claims.(jwt.MapClaims)
+		check := false
+		for _, v := range claims["roles"].([]interface{}) {
+			if v == "admin" {
+				check = true
+				break
+			}
+		}
+		if !check {
+			throwError(http.StatusForbidden, "you have to be an admin to use this endpoint", nil, c)
+			return nil
+		}
+
+		req := &genresAddLocalizationRequest{}
 
 		if err := c.Bind(req); err != nil {
-			throwError(http.StatusBadRequest, "we could not decode you json", err, c)
+			throwError(http.StatusBadRequest, "Could not decode JSON", err, c)
 			return err
 		}
 
-		genre := &models.Genre{
-			Name: req.Name,
-		}
-
-		if err := store.Genre().Create(genre); err != nil {
-			throwError(http.StatusBadRequest, "our database did not like your data", err, c)
+		if err := store.Genre().AddLocalization(req.GenreID, req.LanugageID, req.Name); err != nil {
+			throwError(http.StatusInternalServerError, "Could not save data in our database", err, c)
 			return err
 		}
+
 		return c.JSON(http.StatusOK, responseMessage{
 			Code:    http.StatusOK,
-			Message: "we have created your genre",
-			Data:    genre,
+			Message: "we have added new localization to your genre",
+			Data:    nil,
 		})
 	}
 }

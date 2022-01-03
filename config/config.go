@@ -8,12 +8,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const isFromFile bool = false
+const isFromFile bool = true
 const filepath string = ".dev.env"
 
 const (
 	port       = "PORT"
-	dblink     = "DATABASE_URL"
+	dblink     = "DBLINK"
 	jwtKey     = "JWTKEY"
 	dbHost     = "DBHOST"
 	dbPort     = "DBPORT"

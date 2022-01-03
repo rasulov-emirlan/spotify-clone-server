@@ -10,7 +10,7 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Create(u *models.User) error {
-	return r.db.QueryRow(
+	err := r.db.QueryRow(
 		`
 		INSERT INTO users (username, full_name, birth_date, password, email)
 		VALUES($1, $2, $3, $4, $5) returning id;
@@ -21,6 +21,8 @@ func (r *UserRepository) Create(u *models.User) error {
 		u.Password,
 		u.Email,
 	).Scan(&u.ID)
+	u.Password = ""
+	return err
 }
 
 func (r *UserRepository) FindByID(id int) (*models.User, error) {

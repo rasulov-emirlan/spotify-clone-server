@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"spotify-clone/server/internal/fs"
+	"spotify-clone/server/internal/fs/googlefs"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
 	"strconv"
@@ -24,7 +25,7 @@ var (
 // @Tags		songs
 // @Summary		Upload a song
 // @Description	Uploads a song and its cover with all the info about that song
-// @Accept		json
+// @Accept		mpfd
 // @Produce		json
 // @Param		Authorization	header		string			true	"JWToken for auth"
 // @Param		audio			formData	file			true    "The actual audiofile"
@@ -85,14 +86,13 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 		}
 		defer a.Close()
 
-		// this wierd string values are ids of folders where we want to store our files
-		songid, err := fs.UploadFile(song.Name, audio.Header["Content-Type"][0], a, "1msU3gRmmtLLe_b-SyOcfsUnyFHtFtGuF")
+		songid, err := fs.UploadFile(song.Name, audio.Header["Content-Type"][0], a, googlefs.FolderSongs)
 		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
 		}
 
-		coverid, err := fs.UploadFile(song.Name, cover.Header["Content-Type"][0], b, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
+		coverid, err := fs.UploadFile(song.Name, cover.Header["Content-Type"][0], b, googlefs.FolderCovers)
 		if err != nil {
 			throwError(http.StatusInternalServerError, "unable to save audiofile to server", err, c)
 			return err
@@ -121,7 +121,7 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 // @Produce		json
 // @Param		from			query	int			true    "from which id to start"
 // @Param		to				query	int			true    "at which id to end"
-// @Success		200 	"here your songs"
+// @Success		200				{object}	[]models.Song	"list of songs"
 // @Router		/songs	[get]
 func SongsFromAtoB(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {

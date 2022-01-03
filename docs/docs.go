@@ -58,8 +58,11 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "json web token"
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.authResponse"
+                        }
                     }
                 }
             }
@@ -89,8 +92,73 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "json web token"
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.authResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/countries": {
+            "get": {
+                "description": "Returns all the countries in our database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "countries"
+                ],
+                "summary": "List countries",
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Country"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new country to our database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "countries"
+                ],
+                "summary": "Create country",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Bearer jwt",
+                        "name": "param",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.countriesCreateRquest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "201 if we added your country"
                     }
                 }
             }
@@ -152,6 +220,54 @@ var doc = `{
                 }
             },
             "post": {
+                "description": "Adds a new name for genre in a different language",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Add a localization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "A name for new genre",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "LanguageID to specify language of a name",
+                        "name": "languageID",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Cover image for the genre",
+                        "name": "cover",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "we created your genre"
+                    }
+                }
+            },
+            "patch": {
                 "description": "Creates a new genre",
                 "consumes": [
                     "application/json"
@@ -165,17 +281,24 @@ var doc = `{
                 "summary": "Create a new genre",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "A name for new genre",
-                        "name": "name",
+                        "name": "param",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.genresCreateRequest"
+                            "$ref": "#/definitions/handlers.genresAddLocalizationRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "we created your genre"
                     }
                 }
@@ -206,6 +329,62 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "we added a new song to the genre"
+                    }
+                }
+            }
+        },
+        "/languages": {
+            "get": {
+                "description": "Returns an array of all languages in our database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "languages"
+                ],
+                "summary": "Get all languages",
+                "responses": {
+                    "200": {
+                        "description": "we will give you an array of languages"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new language",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "languages"
+                ],
+                "summary": "Create a new language",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "A name for new genre",
+                        "name": "param",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.languagesCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "we created your language"
                     }
                 }
             }
@@ -276,7 +455,7 @@ var doc = `{
             "post": {
                 "description": "Creates a new playlist that can be accesed by anyone but only you can edit it",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -309,7 +488,7 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "we created your playlist"
                     }
                 }
@@ -375,14 +554,20 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "here your songs"
+                        "description": "list of songs",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Song"
+                            }
+                        }
                     }
                 }
             },
             "post": {
                 "description": "Uploads a song and its cover with all the info about that song",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -463,11 +648,83 @@ var doc = `{
                 }
             }
         },
-        "handlers.genresCreateRequest": {
+        "handlers.countriesCreateRquest": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.genresAddLocalizationRequest": {
+            "type": "object",
+            "properties": {
+                "genre_id": {
+                    "type": "integer"
+                },
+                "lanugage_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.languagesCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Country": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Song": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "cover_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "length": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "profile_picture_url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "johny"
                 }
             }
         }

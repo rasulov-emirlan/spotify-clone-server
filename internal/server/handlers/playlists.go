@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"spotify-clone/server/internal/fs"
+	"spotify-clone/server/internal/fs/googlefs"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
 	"strconv"
@@ -23,12 +24,12 @@ type playlistCreateResponse struct {
 // @Tags		playlists
 // @Summary		Create a playlist
 // @Description	Creates a new playlist that can be accesed by anyone but only you can edit it
-// @Accept		json
+// @Accept		mpfd
 // @Produce		json
 // @Param		Authorization	header		string		true	"JWToken for auth"
 // @Param       name            formData	string		true	"The name of the playlist"
 // @Param       cover			formData	file		true	"The name of the playlist"
-// @Success		200 	"we created your playlist"
+// @Success		201 	"we created your playlist"
 // @Router		/playlists	[post]
 func PlaylistsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -58,13 +59,11 @@ func PlaylistsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			},
 		}
 
-		// 😅 this esoteric looking string is an id for folder in  google drive💿
-		coverlink, err := fs.UploadFile(playlist.Name, cover.Header["Content-Type"][0], coverfile, "1VAu4UO77e9OeXCfckOKT2mEGttoFgmeq")
+		coverlink, err := fs.UploadFile(playlist.Name, cover.Header["Content-Type"][0], coverfile, googlefs.FolderCovers)
 		if err != nil {
 			throwError(http.StatusInternalServerError, "could not upload cover to our server", err, c)
 			return err
 		}
-
 
 		playlist.CoverUrl = coverlink
 
@@ -72,7 +71,7 @@ func PlaylistsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			throwError(http.StatusInternalServerError, "our database did not like your info", err, c)
 			return err
 		}
-		return c.JSON(http.StatusOK, responseMessage{
+		return c.JSON(http.StatusCreated, responseMessage{
 			Code:    http.StatusOK,
 			Message: "we created your playlist! 🥳"})
 	}

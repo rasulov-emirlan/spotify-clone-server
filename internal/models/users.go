@@ -11,11 +11,11 @@ import (
 type User struct {
 	ID                int    `json:"id" example:"0"`
 	UserName          string `json:"username" example:"johny"`
-	FullName          string `json:"-" example:"John Doe"`
-	BirthDate         string `json"-" example:"2000-01-01"`
+	FullName          string `json:"-, omitempty" example:"John Doe"`
+	BirthDate         string `json:"-, omitempty" example:"2000-01-01"`
 	Password          string `json:"-" example:"QWERTY123"`
 	Email             string `json:"-" example:"john@gmail.com"`
-	Roles             Roles  `json:"roles"`
+	Roles             Roles  `json:"-"`
 	ProfilePictureURL string `json:"profile_picture_url"`
 }
 

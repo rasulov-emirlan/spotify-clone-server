@@ -9,12 +9,14 @@ type Store interface {
 	User() UserRepository
 	Playlist() PlaylistRepository
 	Genre() GenresRepository
+	Language() LanguageRepository
+	Country() CountryRepository
 }
 
 type SongRepository interface {
 	Create(s *models.Song) error
 	FindByID(id int) (*models.Song, error)
-	GetSongs(from int, to int) ([]models.Song, error)
+	GetSongs(from int, to int) ([]*models.Song, error)
 	// DeleteByID(id int) error // new functionalaty
 }
 
@@ -27,15 +29,26 @@ type UserRepository interface {
 
 type PlaylistRepository interface {
 	Create(p *models.Playlist) error
-	ListAll() ([]models.Playlist, error)
-	UsersPlaylists(userID int) ([]models.Playlist, error)
+	ListAll() ([]*models.Playlist, error)
+	UsersPlaylists(userID int) ([]*models.Playlist, error)
 	AddSong(songID int, playlistID int) error
-	GetSongsFromPlaylist(id int) (*[]models.Song, error)
+	GetSongsFromPlaylist(id int) ([]*models.Song, error)
 }
 
 type GenresRepository interface {
-	Create(g *models.Genre) error
-	ListAll() ([]models.Genre, error)
+	Create(g *models.Genre, languageID int) error
+	AddLocalization(genreID, languageID int, name string) error
+	ListAll() ([]*models.Genre, error)
 	AddSong(songID, genreID int) error
-	GetSongs(genderID int) ([]models.Song, error)
+	GetSongs(genderID int) ([]*models.Song, error)
+}
+
+type LanguageRepository interface {
+	Create(l *models.Language) error
+	ListAll() ([]*models.Language, error)
+}
+
+type CountryRepository interface {
+	Create(c *models.Country) error
+	ListAll() ([]*models.Country, error)
 }

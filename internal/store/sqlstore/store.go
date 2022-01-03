@@ -13,6 +13,8 @@ type Store struct {
 	userRepository     *UserRepository
 	playlistRepository *PlaylistRepository
 	genreRepository    *GenreRepository
+	languageRepository *LanguageRepository
+	countryRepository  *CountryRepository
 }
 
 func New(config string) (*Store, error) {
@@ -60,6 +62,24 @@ func (s *Store) Genre() store.GenresRepository {
 		return s.genreRepository
 	}
 	return &GenreRepository{
+		db: s.db,
+	}
+}
+
+func (s *Store) Language() store.LanguageRepository {
+	if s.languageRepository != nil {
+		return s.languageRepository
+	}
+	return &LanguageRepository{
+		db: s.db,
+	}
+}
+
+func (s *Store) Country() store.CountryRepository {
+	if s.countryRepository != nil {
+		return s.countryRepository
+	}
+	return &CountryRepository{
 		db: s.db,
 	}
 }
