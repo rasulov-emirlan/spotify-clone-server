@@ -24,6 +24,9 @@ type UserRepository interface {
 	Create(u *models.User) error
 	FindByID(id int) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
+	AddFavoriteSong(songID, userID int) error
+	ListFavoriteSongs(userID, limit, offset int) ([]*models.Song, error)
+	RemoveFromFavoriteSongs(userID, songID int) error
 	// BanByID(id int) error // new functionalaty
 }
 

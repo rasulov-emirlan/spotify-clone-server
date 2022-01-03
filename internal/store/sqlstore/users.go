@@ -80,3 +80,67 @@ func (r *UserRepository) FindByName(name string) (*models.User, error) {
 	LIMIT 1;
 	`, name).Scan(&u.ID, &u.UserName, &u.ProfilePictureURL)
 }
+
+func (r *UserRepository) AddFavoriteSong(songID, userID int) error {
+	return r.db.QueryRow(`
+	INSERT INTO favorite_songs(
+		song_id, user_id)
+		VALUES ($1, $2);
+	`, songID, userID).Err()
+}
+
+func (r *UserRepository) ListFavoriteSongs(userID, limit, offset int) ([]*models.Song, error) {
+	rows, err := r.db.Query(`
+	SELECT s.id, s.name, s.cover_picture_url, s.song_url, u.id as user_id, u.username, u.profile_picture_url
+	FROM favorite_songs fs
+	INNER JOIN songs s
+		ON s.id = fs.song_id
+	INNER JOIN users u
+		ON u.id = fs.user_id
+	WHERE fs.user_id = $1
+	LIMIT $2 OFFSET $3; 
+	`, userID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		songs                                                        []*models.Song
+		songID, authorID                                             int
+		songName, authorName, coverPictureURL, songURL, authorPFPURL string
+	)
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&songID,
+			&songName,
+			&coverPictureURL,
+			&songURL,
+			&authorID,
+			&authorName,
+			&authorPFPURL,
+		); err != nil {
+			return nil, err
+		}
+		songs = append(songs, &models.Song{
+			ID:       songID,
+			Name:     songName,
+			CoverURL: coverPictureURL,
+			URL:      songURL,
+			Author: models.User{
+				ID:                authorID,
+				UserName:          authorName,
+				ProfilePictureURL: authorPFPURL,
+			},
+		})
+	}
+	return songs, nil
+}
+
+func (r *UserRepository) RemoveFromFavoriteSongs(userID, songID int) error {
+	return r.db.QueryRow(`
+	DELETE FROM favorite_songs
+	WHERE song_id = $1
+	AND user_id = $2;
+	`, songID, userID).Err()
+}

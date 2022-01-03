@@ -19,7 +19,7 @@ type countriesCreateRquest struct {
 // @Accept		json
 // @Produce		json
 // @Param		Authorization	header	string					true	"Bearer jwt"
-// @Param		param			body	countriesCreateRquest	true	"Bearer jwt"
+// @Param		param			body	countriesCreateRquest	true	"request"
 // @Success		201 	"201 if we added your country"
 // @Router		/countries	[post]
 func CountriesCreate(store store.Store) echo.HandlerFunc {

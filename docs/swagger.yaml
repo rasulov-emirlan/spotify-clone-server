@@ -159,7 +159,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Bearer jwt
+      - description: request
         in: body
         name: param
         required: true
@@ -477,4 +477,61 @@ paths:
       summary: Upload a song
       tags:
       - songs
+  /users/favorite/songs/:
+    get:
+      consumes:
+      - application/json
+      description: Returns an array of favorite songs
+      parameters:
+      - description: User id
+        in: query
+        name: user
+        required: true
+        type: integer
+      - description: how many songs you want
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: from which index to start
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: array of favorite songs
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
+      summary: Get Favorite Songs
+      tags:
+      - users
+  /users/favorite/songs/{song}:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new favorite song for a certain user
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Song id
+        in: path
+        name: song
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 201 if we added your country
+      summary: Add favorite song
+      tags:
+      - users
 swagger: "2.0"

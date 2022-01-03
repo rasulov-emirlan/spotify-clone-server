@@ -138,6 +138,12 @@ func (s *Server) plugRoutes() error {
 		countries.GET("", handlers.CountriesListAll(s.Store))
 	}
 
+	users := s.Router.Group("/users")
+	{
+		users.POST("/favorite/songs/:song", handlers.UsersAddFavoriteSong(s.Store), jwtmiddleware)
+		users.GET("/favorite/songs/", handlers.UsersListFavoriteSongs(s.Store))
+	}
+
 	auth := s.Router.Group("/auth")
 	{
 		auth.POST("/register", handlers.UserRegistration(s.Store, s.JWTkey))

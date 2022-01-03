@@ -147,7 +147,7 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "description": "Bearer jwt",
+                        "description": "request",
                         "name": "param",
                         "in": "body",
                         "required": true,
@@ -609,6 +609,91 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "we uploaded your song"
+                    }
+                }
+            }
+        },
+        "/users/favorite/songs/": {
+            "get": {
+                "description": "Returns an array of favorite songs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get Favorite Songs",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "user",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "how many songs you want",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "from which index to start",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "array of favorite songs",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Song"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/favorite/songs/{song}": {
+            "post": {
+                "description": "Adds a new favorite song for a certain user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Add favorite song",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Song id",
+                        "name": "song",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "201 if we added your country"
                     }
                 }
             }
