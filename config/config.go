@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const isFromFile bool = true
+const isFromFile bool = false
 const filepath string = ".dev.env"
 
 const (
