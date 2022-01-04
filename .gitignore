@@ -2,6 +2,6 @@
 .env
 apiserver
 .test.env
-googleapi_credentials.json
-token.json
+# googleapi_credentials.json
+# token.json
 config.go
