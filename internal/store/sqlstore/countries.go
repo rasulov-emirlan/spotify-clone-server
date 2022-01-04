@@ -46,3 +46,10 @@ func (r *CountryRepository) ListAll() ([]*models.Country, error) {
 	}
 	return countries, nil
 }
+
+func (r *CountryRepository) Delete(countryID int) error {
+	return r.db.QueryRow(`
+	DELETE FROM countries
+	WHERE id = $1;
+	`, countryID).Err()
+}

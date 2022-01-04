@@ -163,6 +163,42 @@ var doc = `{
                 }
             }
         },
+        "/countries/{id}": {
+            "delete": {
+                "description": "Deletes a country from our database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "countries"
+                ],
+                "summary": "Delete country",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "country id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we have deleted that country"
+                    }
+                }
+            }
+        },
         "/genres": {
             "get": {
                 "description": "Lists all the genres in our database",
@@ -662,7 +698,7 @@ var doc = `{
                 }
             }
         },
-        "/users/favorite/songs/{song}": {
+        "/users/favorite/songs/{id}": {
             "post": {
                 "description": "Adds a new favorite song for a certain user",
                 "consumes": [
@@ -686,7 +722,7 @@ var doc = `{
                     {
                         "type": "integer",
                         "description": "Song id",
-                        "name": "song",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -694,6 +730,40 @@ var doc = `{
                 "responses": {
                     "201": {
                         "description": "201 if we added your country"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Removes a song from favorites",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Remove Favorite Song",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "song id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 if deleted successfuly"
                     }
                 }
             }

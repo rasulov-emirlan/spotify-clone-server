@@ -173,6 +173,30 @@ paths:
       summary: Create country
       tags:
       - countries
+  /countries/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a country from our database
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: country id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we have deleted that country
+      summary: Delete country
+      tags:
+      - countries
   /genres:
     get:
       consumes:
@@ -510,7 +534,30 @@ paths:
       summary: Get Favorite Songs
       tags:
       - users
-  /users/favorite/songs/{song}:
+  /users/favorite/songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a song from favorites
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: song id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 200 if deleted successfuly
+      summary: Remove Favorite Song
+      tags:
+      - users
     post:
       consumes:
       - application/json
@@ -523,7 +570,7 @@ paths:
         type: string
       - description: Song id
         in: path
-        name: song
+        name: id
         required: true
         type: integer
       produces:

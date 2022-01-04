@@ -16,9 +16,9 @@ import (
 // @Accept		json
 // @Produce		json
 // @Param		Authorization	header	string		true	"Bearer jwt"
-// @Param		song			path	int			true	"Song id"
+// @Param		id				path	int			true	"Song id"
 // @Success		201 	"201 if we added your country"
-// @Router		/users/favorite/songs/{song}	[post]
+// @Router		/users/favorite/songs/{id}	[post]
 func UsersAddFavoriteSong(s store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user := c.Get("user")
@@ -26,7 +26,7 @@ func UsersAddFavoriteSong(s store.Store) echo.HandlerFunc {
 
 		claims := token.Claims.(jwt.MapClaims)
 
-		songID, err := strconv.Atoi(c.Param("song"))
+		songID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			throwError(http.StatusBadRequest, "could not turn songID into int", err, c)
 			return err
@@ -80,5 +80,44 @@ func UsersListFavoriteSongs(s store.Store) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, songs)
+	}
+}
+
+// UsersRemoveFavoriteSong docs
+// @Tags		users
+// @Summary		Remove Favorite Song
+// @Description	Removes a song from favorites
+// @Accept		json
+// @Produce		json
+// @Param		Authorization	header		string			true	"Bearer jwt"
+// @Param		id				path		int				true	"song id"
+// @Success		200 			"200 if deleted successfuly"
+// @Router		/users/favorite/songs/{id}	[delete]
+func UsersRemoveFavoriteSong(s store.Store) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := c.Get("user")
+		token := user.(*jwt.Token)
+
+		claims := token.Claims.(jwt.MapClaims)
+		userID := int(claims["userid"].(float64))
+
+		if userID == 0 {
+			throwError(http.StatusBadRequest, "", nil, c)
+			return nil
+		}
+
+		songID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			throwError(http.StatusBadRequest, "", err, c)
+			return err
+		}
+
+		if err := s.User().RemoveFromFavoriteSongs(userID, songID); err != nil {
+			throwError(http.StatusInternalServerError, "", err, c)
+			return err
+		}
+
+		respondWithData(http.StatusOK, "we have deleted the song from your favorites", nil, c)
+		return nil
 	}
 }

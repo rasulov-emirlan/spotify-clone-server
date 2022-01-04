@@ -137,12 +137,14 @@ func (s *Server) plugRoutes() error {
 	{
 		countries.POST("", handlers.CountriesCreate(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
 		countries.GET("", handlers.CountriesListAll(s.Store))
+		countries.DELETE("/:id", handlers.CountriesDelete(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
 	}
 
 	users := s.Router.Group("/users")
 	{
-		users.POST("/favorite/songs/:song", handlers.UsersAddFavoriteSong(s.Store), jwtmiddleware)
+		users.POST("/favorite/songs/:id", handlers.UsersAddFavoriteSong(s.Store), jwtmiddleware)
 		users.GET("/favorite/songs/", handlers.UsersListFavoriteSongs(s.Store))
+		users.DELETE("/favorite/songs/:id", handlers.UsersRemoveFavoriteSong(s.Store), jwtmiddleware)
 	}
 
 	auth := s.Router.Group("/auth")

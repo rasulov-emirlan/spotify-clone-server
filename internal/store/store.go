@@ -54,4 +54,5 @@ type LanguageRepository interface {
 type CountryRepository interface {
 	Create(c *models.Country) error
 	ListAll() ([]*models.Country, error)
+	Delete(countryID int) error
 }
