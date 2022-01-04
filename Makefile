@@ -2,7 +2,7 @@ POSTGRESQL_URL='postgres://postgres:postgres@localhost:5432/spotify-clone?sslmod
 
 dev:
 	go build -v ./cmd/apiserver
-	./apiserver
+	./apiserver true .dev.env
 	rm apiserver
 
 build:

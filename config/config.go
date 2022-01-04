@@ -8,8 +8,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const isFromFile bool = false
-const filepath string = ".dev.env"
+var isFromFile bool = false
+var filepath string = ".dev.env"
+
+func SetSonfig(isfile bool, filename string) {
+	isFromFile = isfile
+	filepath = filename
+}
 
 const (
 	port       = "PORT"

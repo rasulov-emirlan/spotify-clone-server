@@ -12,6 +12,10 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 3 {
+		config.SetSonfig(true, os.Args[2])
+	}
+
 	port, err := config.NewPortForServer()
 	log.Println(port)
 	if err != nil {
