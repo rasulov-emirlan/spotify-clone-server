@@ -49,6 +49,7 @@ type GenresRepository interface {
 type LanguageRepository interface {
 	Create(l *models.Language) error
 	ListAll() ([]*models.Language, error)
+	Delete(languageID int) error
 }
 
 type CountryRepository interface {

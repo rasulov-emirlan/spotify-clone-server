@@ -50,6 +50,13 @@ definitions:
       name:
         type: string
     type: object
+  models.Language:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.Song:
     properties:
       author:
@@ -321,6 +328,10 @@ paths:
       responses:
         "200":
           description: we will give you an array of languages
+          schema:
+            items:
+              $ref: '#/definitions/models.Language'
+            type: array
       summary: Get all languages
       tags:
       - languages
@@ -346,6 +357,31 @@ paths:
         "201":
           description: we created your language
       summary: Create a new language
+      tags:
+      - languages
+  /languages/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a language from our database. But you have to be an admin
+        to use this endpoint
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: language id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: we have deleted that language
+      summary: Delete language
       tags:
       - languages
   /playlists:

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/store"
+	"strconv"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -67,7 +68,7 @@ func LanguagesCreate(store store.Store) echo.HandlerFunc {
 // @Description	Returns an array of all languages in our database
 // @Accept		json
 // @Produce		json
-// @Success		200 	"we will give you an array of languages"
+// @Success		200		{object}	[]models.Language	"we will give you an array of languages"
 // @Router		/languages	[get]
 func LanguagesListAll(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -78,5 +79,33 @@ func LanguagesListAll(store store.Store) echo.HandlerFunc {
 			return err
 		}
 		return c.JSON(http.StatusOK, languages)
+	}
+}
+
+// LanguagesDelete docs
+// @Tags		languages
+// @Summary		Delete language
+// @Description	Deletes a language from our database. But you have to be an admin to use this endpoint
+// @Accept		json
+// @Produce		json
+// @Param		Authorization	header		string		true	"Bearer jwt"
+// @Param		id				path		int			true	"language id"
+// @Success		200 	"we have deleted that language"
+// @Router		/languages/{id}	[delete]
+func LanguagesDelete(s store.Store) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		languageID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			throwError(http.StatusBadRequest, "could not parse data from path params", err, c)
+			return err
+		}
+
+		if err := s.Language().Delete(languageID); err != nil {
+			throwError(http.StatusInternalServerError, "looks like our database did not like your data", err, c)
+			return err
+		}
+
+		respondWithData(http.StatusOK, "we have deleted that language", nil, c)
+		return nil
 	}
 }

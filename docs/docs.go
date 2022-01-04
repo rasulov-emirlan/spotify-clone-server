@@ -384,7 +384,13 @@ var doc = `{
                 "summary": "Get all languages",
                 "responses": {
                     "200": {
-                        "description": "we will give you an array of languages"
+                        "description": "we will give you an array of languages",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Language"
+                            }
+                        }
                     }
                 }
             },
@@ -421,6 +427,42 @@ var doc = `{
                 "responses": {
                     "201": {
                         "description": "we created your language"
+                    }
+                }
+            }
+        },
+        "/languages/{id}": {
+            "delete": {
+                "description": "Deletes a language from our database. But you have to be an admin to use this endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "languages"
+                ],
+                "summary": "Delete language",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "language id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "we have deleted that language"
                     }
                 }
             }
@@ -834,6 +876,17 @@ var doc = `{
             }
         },
         "models.Country": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Language": {
             "type": "object",
             "properties": {
                 "id": {

@@ -131,6 +131,7 @@ func (s *Server) plugRoutes() error {
 	{
 		languages.POST("", handlers.LanguagesCreate(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
 		languages.GET("", handlers.LanguagesListAll(s.Store))
+		languages.DELETE("/:id", handlers.LanguagesDelete(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
 	}
 
 	countries := s.Router.Group("/countries")

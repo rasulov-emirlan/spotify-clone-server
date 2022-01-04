@@ -47,3 +47,10 @@ func (r *LanguageRepository) ListAll() ([]*models.Language, error) {
 
 	return languages, nil
 }
+
+func (r *LanguageRepository) Delete(languageID int) error {
+	return r.db.QueryRow(`
+	DELETE FROM languages
+	WHERE id = $1;
+	`, languageID).Err()
+}
