@@ -36,6 +36,7 @@ func GenresCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			throwError(http.StatusBadRequest, "could not open file for cover", err, c)
 			return err
 		}
+		defer coverfile.Close()
 
 		name := c.FormValue("name")
 		languageID, err := strconv.Atoi(c.FormValue("languageID"))

@@ -49,6 +49,7 @@ func PlaylistsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 			throwError(http.StatusBadRequest, "could not open image for cover", err, c)
 			return err
 		}
+		defer coverfile.Close()
 
 		name := c.FormValue("name")
 
