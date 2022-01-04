@@ -13,12 +13,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type playlistCreateRequest struct {
-	Name string `json:"name" example:"my favorites"`
-}
-type playlistCreateResponse struct {
-	message string `json:"message"`
-}
+// type playlistCreateRequest struct {
+// 	Name string `json:"name" example:"my favorites"`
+// }
+// type playlistCreateResponse struct {
+// 	message string `json:"message"`
+// }
 
 // PlaylistsCreate docs
 // @Tags		playlists

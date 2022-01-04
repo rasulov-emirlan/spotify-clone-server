@@ -9,7 +9,6 @@ import (
 	"spotify-clone/server/internal/store"
 	"strconv"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,22 +26,6 @@ import (
 // @Router		/genres	[post]
 func GenresCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		user := c.Get("user")
-		token := user.(*jwt.Token)
-
-		claims := token.Claims.(jwt.MapClaims)
-		check := false
-		for _, v := range claims["roles"].([]interface{}) {
-			if v == "admin" {
-				check = true
-				break
-			}
-		}
-		if !check {
-			throwError(http.StatusForbidden, "you have to be an admin to use this endpoint", nil, c)
-			return nil
-		}
-
 		cover, err := c.FormFile("cover")
 		if err != nil {
 			throwError(http.StatusBadRequest, "something is wrong with your file for cover", err, c)
@@ -103,22 +86,6 @@ type genresAddLocalizationRequest struct {
 // @Router		/genres	[patch]
 func GenresAddLocalization(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		user := c.Get("user")
-		token := user.(*jwt.Token)
-
-		claims := token.Claims.(jwt.MapClaims)
-		check := false
-		for _, v := range claims["roles"].([]interface{}) {
-			if v == "admin" {
-				check = true
-				break
-			}
-		}
-		if !check {
-			throwError(http.StatusForbidden, "you have to be an admin to use this endpoint", nil, c)
-			return nil
-		}
-
 		req := &genresAddLocalizationRequest{}
 
 		if err := c.Bind(req); err != nil {

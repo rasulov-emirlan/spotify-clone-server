@@ -7,6 +7,7 @@ import (
 	_ "spotify-clone/server/docs"
 	"spotify-clone/server/internal/fs"
 	"spotify-clone/server/internal/fs/googlefs"
+	"spotify-clone/server/internal/models"
 	"spotify-clone/server/internal/server/handlers"
 	"spotify-clone/server/internal/store"
 	"spotify-clone/server/internal/store/sqlstore"
@@ -105,7 +106,7 @@ func (s *Server) plugRoutes() error {
 
 	songs := s.Router.Group("/songs")
 	{
-		songs.POST("", handlers.SongsCreate(s.Store, s.FS), jwtmiddleware)
+		songs.POST("", handlers.SongsCreate(s.Store, s.FS), jwtmiddleware, handlers.MiddlewareCheckRole("singer"))
 		songs.GET("", handlers.SongsFromAtoB(s.Store))
 	}
 
@@ -119,22 +120,22 @@ func (s *Server) plugRoutes() error {
 
 	genres := s.Router.Group("/genres")
 	{
-		genres.POST("", handlers.GenresCreate(s.Store, s.FS), jwtmiddleware)
-		genres.PATCH("", handlers.GenresAddLocalization(s.Store), jwtmiddleware)
-		genres.PUT("", handlers.GenresAddSong(s.Store))
+		genres.POST("", handlers.GenresCreate(s.Store, s.FS), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
+		genres.PATCH("", handlers.GenresAddLocalization(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
+		genres.PUT("", handlers.GenresAddSong(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin, models.Singer))
 		genres.GET("", handlers.ListAllGenres(s.Store))
 		genres.GET("/:genre", handlers.GenresSongs(s.Store))
 	}
 
 	languages := s.Router.Group("/languages")
 	{
-		languages.POST("", handlers.LanguagesCreate(s.Store), jwtmiddleware)
+		languages.POST("", handlers.LanguagesCreate(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
 		languages.GET("", handlers.LanguagesListAll(s.Store))
 	}
 
 	countries := s.Router.Group("/countries")
 	{
-		countries.POST("", handlers.CountriesCreate(s.Store), jwtmiddleware)
+		countries.POST("", handlers.CountriesCreate(s.Store), jwtmiddleware, handlers.MiddlewareCheckRole(models.Admin))
 		countries.GET("", handlers.CountriesListAll(s.Store))
 	}
 
@@ -149,6 +150,7 @@ func (s *Server) plugRoutes() error {
 		auth.POST("/register", handlers.UserRegistration(s.Store, s.JWTkey))
 		auth.POST("/login", handlers.UserLogin(s.Store, s.JWTkey))
 	}
+
 	s.Router.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	return nil
