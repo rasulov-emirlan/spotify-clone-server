@@ -146,6 +146,10 @@ func (s *Server) plugRoutes() error {
 		users.POST("/favorite/songs/:id", handlers.UsersAddFavoriteSong(s.Store), jwtmiddleware)
 		users.GET("/favorite/songs/", handlers.UsersListFavoriteSongs(s.Store))
 		users.DELETE("/favorite/songs/:id", handlers.UsersRemoveFavoriteSong(s.Store), jwtmiddleware)
+
+		users.POST("/favorite/authors/:id", handlers.UsersAddFavoriteAuthor(s.Store), jwtmiddleware)
+		users.GET("/favorite/authors/", handlers.UsersListFavoriteAuthors(s.Store))
+		users.DELETE("/favorite/authors/:id", handlers.UsersRemoveFavoriteAuthor(s.Store), jwtmiddleware)
 	}
 
 	auth := s.Router.Group("/auth")

@@ -12,8 +12,8 @@ type authRequest struct {
 	UserName  string `json:"username" example:"Johnny"`
 	FullName  string `json:"full_name" example:"Johny Cash"`
 	BirthDate string `json:"birth_date" example:"2000-01-01"`
-	Email     string `json:"email" example:"john@gmai.com"`
-	Password  string `json:"password" example:"123456" omniemit`
+	Email     string `json:"email" example:"john@gmail.com"`
+	Password  string `json:"password, omitempty" example:"123456"`
 }
 
 type authResponse struct {
@@ -46,7 +46,7 @@ func UserRegistration(store store.Store, JWTkey string) echo.HandlerFunc {
 		}
 
 		if err := user.BeforeCreate(); err != nil {
-			throwError(http.StatusBadRequest, "could not decode json 😥", err, c)
+			throwError(http.StatusBadRequest, "something is wrong with your data 😥", err, c)
 			return err
 		}
 

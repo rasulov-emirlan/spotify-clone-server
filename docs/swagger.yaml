@@ -7,7 +7,7 @@ definitions:
         example: "2000-01-01"
         type: string
       email:
-        example: john@gmai.com
+        example: john@gmail.com
         type: string
       full_name:
         example: Johny Cash
@@ -537,6 +537,90 @@ paths:
       summary: Upload a song
       tags:
       - songs
+  /users/favorite/authors/:
+    get:
+      consumes:
+      - application/json
+      description: Returns an array of authors from `offset` with length of `limit`
+      parameters:
+      - description: user id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: all the favorite authors
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: List Favorite Authors
+      tags:
+      - users
+  /users/favorite/authors/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes an authors from favorites
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: author id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: all the favorite authors
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Delete Favorite Author
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Adds a favorite author
+      parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: author id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 200 if added successfuly
+      summary: Add Favorite Author
+      tags:
+      - users
   /users/favorite/songs/:
     get:
       consumes:

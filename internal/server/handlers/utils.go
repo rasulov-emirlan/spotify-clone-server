@@ -20,7 +20,7 @@ func throwError(code int, msg string, data interface{}, c echo.Context) {
 		Message: msg,
 		Data:    data,
 	})
-	log.Println(code, "error: ", data)
+	log.Println(code, "error:", data)
 }
 
 func respondWithData(code int, msg string, data interface{}, c echo.Context) {
