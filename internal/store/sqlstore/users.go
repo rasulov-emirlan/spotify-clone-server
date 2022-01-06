@@ -91,7 +91,7 @@ func (r *UserRepository) AddFavoriteSong(songID, userID int) error {
 
 func (r *UserRepository) ListFavoriteSongs(userID, limit, offset int) ([]*models.Song, error) {
 	rows, err := r.db.Query(`
-	SELECT s.id, s.name, s.cover_picture_url, s.song_url, u.id as user_id, u.username, u.profile_picture_url
+	SELECT s.id, s.name, s.cover_picture_url, s.song_url, u.id as user_id, u.username
 	FROM favorite_songs fs
 	INNER JOIN songs s
 		ON s.id = fs.song_id
@@ -105,9 +105,9 @@ func (r *UserRepository) ListFavoriteSongs(userID, limit, offset int) ([]*models
 	}
 
 	var (
-		songs                                                        []*models.Song
-		songID, authorID                                             int
-		songName, authorName, coverPictureURL, songURL, authorPFPURL string
+		songs                                          []*models.Song
+		songID, authorID                               int
+		songName, authorName, coverPictureURL, songURL string
 	)
 
 	for rows.Next() {
@@ -118,7 +118,7 @@ func (r *UserRepository) ListFavoriteSongs(userID, limit, offset int) ([]*models
 			&songURL,
 			&authorID,
 			&authorName,
-			&authorPFPURL,
+			// &authorPFPURL,
 		); err != nil {
 			return nil, err
 		}
@@ -128,9 +128,9 @@ func (r *UserRepository) ListFavoriteSongs(userID, limit, offset int) ([]*models
 			CoverURL: coverPictureURL,
 			URL:      songURL,
 			Author: models.User{
-				ID:                authorID,
-				UserName:          authorName,
-				ProfilePictureURL: authorPFPURL,
+				ID:       authorID,
+				UserName: authorName,
+				// ProfilePictureURL: authorPFPURL,
 			},
 		})
 	}

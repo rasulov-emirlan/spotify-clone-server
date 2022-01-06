@@ -40,18 +40,6 @@ func SongsCreate(store store.Store, fs fs.FileSystem) echo.HandlerFunc {
 		token := user.(*jwt.Token)
 
 		claims := token.Claims.(jwt.MapClaims)
-		// ifSinger := false
-		// for _, role := range claims["roles"].([]interface{}) {
-		// 	fmt.Println(role)
-		// 	if role == "singer" {
-		// 		ifSinger = true
-		// 		break
-		// 	}
-		// }
-		// if !ifSinger {
-		// 	throwError(http.StatusBadRequest, "you are not a verified singer, thus cannot upload your songs", errNotASinger, c)
-		// 	return errNotASinger
-		// }
 
 		name := c.FormValue("name")
 

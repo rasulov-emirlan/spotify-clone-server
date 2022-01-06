@@ -14,7 +14,7 @@ import (
 func TestDB(t *testing.T, databaseURL string) (store.Store, func()) {
 	t.Helper()
 	m, err := migrate.New(
-		"file://../../../migrations/db/migrations/",
+		"file://../../../migrations/",
 		databaseURL)
 	if err != nil {
 		log.Fatal(err)
@@ -42,7 +42,7 @@ func TestDB(t *testing.T, databaseURL string) (store.Store, func()) {
 		}, func() {
 			db.Close()
 			m, err := migrate.New(
-				"file://../../../migrations/db/migrations",
+				"file://../../../migrations",
 				databaseURL)
 			if err != nil {
 				log.Fatal(err)

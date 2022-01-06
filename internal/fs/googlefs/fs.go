@@ -50,6 +50,10 @@ func (fs *FileSystem) UploadFile(name string, mimeType string, content io.Reader
 		Name:     name,
 		Parents:  []string{folderID},
 	}
+	// mimtype shows the type of a file
+	// TODO compress file in here
+	// TODO if content is empty we will not upload anything
+	// we will return a link to a random avatar or
 	file, err := fs.service.Files.Create(f).Media(content).Do()
 	if err != nil {
 		return "", err
