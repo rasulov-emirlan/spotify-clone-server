@@ -27,6 +27,9 @@ type UserRepository interface {
 	AddFavoriteSong(songID, userID int) error
 	ListFavoriteSongs(userID, limit, offset int) ([]*models.Song, error)
 	RemoveFromFavoriteSongs(userID, songID int) error
+	AddFavoriteAuthor(userID, authorID int) error
+	ListFavoriteAuthors(userID, limit, offset int) ([]*models.User, error)
+	RemoveFromFavoriteAuthors(userID, authorID int) error
 	// BanByID(id int) error // new functionalaty
 }
 
