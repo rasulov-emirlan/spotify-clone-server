@@ -17,7 +17,7 @@ func main() {
 	}
 
 	port, err := config.NewPortForServer()
-	log.Println(port)
+	log.Println("Server started on port -> ", port)
 	if err != nil {
 		log.Fatal(err)
 	}

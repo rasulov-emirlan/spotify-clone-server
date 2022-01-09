@@ -43,7 +43,7 @@ func New() (*Server, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(dbconfig)
+	log.Println("Connected to database on -> ", dbconfig)
 	jwtkey, err := config.NewJWTToken()
 	if err != nil {
 		log.Fatal(err)
