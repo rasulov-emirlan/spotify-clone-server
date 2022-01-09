@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS countries (
 	id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
 	name varchar(255) NOT NULL,
 	-- language_id integer NOT NULL,
+	added_by integer NOT NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_countries_id PRIMARY KEY(id)
 );
 
@@ -9,6 +11,8 @@ CREATE TABLE IF NOT EXISTS languages (
 	id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
 	name varchar(255) NOT NULL,
 	-- country_id integer NOT NULL,
+	added_by integer NOT NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_languages_id PRIMARY KEY(id)
 );
 
@@ -22,8 +26,3 @@ CREATE TABLE IF NOT EXISTS languages (
 -- FOREIGN KEY (country_id)
 -- REFERENCES countries(id);
 
-INSERT INTO countries(name)
-VALUES('USA');
-
-INSERT INTO languages(name)
-VALUES('english');

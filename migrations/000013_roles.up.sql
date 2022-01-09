@@ -7,3 +7,5 @@ INSERT INTO roles(name)
 VALUES('admin');
 INSERT INTO roles(name)
 VALUES('singer');
+INSERT INTO roles(name)
+VALUES('label');
