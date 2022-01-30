@@ -10,12 +10,15 @@ import (
 )
 
 type Song struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Author   User   `json:"author"`
-	Length   int    `json:"length"`
-	URL      string `json:"url"`
-	CoverURL string `json:"cover_url"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Author    User   `json:"author"`
+	СreatedAt string `json:"created_at"`
+	Length    int    `json:"length"`
+	URL       string `json:"url"`
+	CoverURL  string `json:"cover_url"`
+	LikeCount int    `json:"like_count"`
+	IsLiked   bool   `json:"is_liked"`
 }
 
 func TestSong() *Song {

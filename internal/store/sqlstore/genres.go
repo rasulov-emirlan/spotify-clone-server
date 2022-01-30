@@ -11,14 +11,16 @@ type GenreRepository struct {
 
 func (r *GenreRepository) Create(g *models.Genre, languageID int) error {
 	return r.db.QueryRow(`
-	WITH tt as (
-		INSERT INTO genres (cover_picture_url)
-		VALUES ($1)
-		RETURNING id
-	)
-	INSERT INTO genres_localizations(genre_id, name, language_id)
-	VALUES((SELECT id FROM tt), $2, $3)
-	RETURNING genre_id;
+	BEGIN;
+		WITH tt as (
+			INSERT INTO genres (cover_picture_url)
+			VALUES ($1)
+			RETURNING id
+		)
+		INSERT INTO genres_localizations(genre_id, name, language_id)
+		VALUES((SELECT id FROM tt), $2, $3)
+		RETURNING genre_id;
+	COMMIT;
 	`, g.CoverURL, g.Name, languageID).Scan(&g.ID)
 }
 

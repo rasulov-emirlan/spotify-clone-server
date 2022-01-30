@@ -12,9 +12,9 @@ type PlaylistRepository struct {
 func (r *PlaylistRepository) Create(p *models.Playlist) error {
 	return r.db.QueryRow(`
 	INSERT INTO playlists(
-	name, author_id, cover_picture_url)
-	VALUES ($1, $2, $3);
-	`, p.Name, p.Author.ID, p.CoverUrl).Err()
+	name, author_id, cover_picture_url, is_album)
+	VALUES ($1, $2, $3, $4);
+	`, p.Name, p.Author.ID, p.CoverUrl, p.IsAlbum).Err()
 }
 
 func (r *PlaylistRepository) UsersPlaylists(userID int) ([]*models.Playlist, error) {
@@ -112,18 +112,35 @@ func (r *PlaylistRepository) ListAll() ([]*models.Playlist, error) {
 	return playlists, nil
 }
 
-func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) ([]*models.Song, error) {
-	rows, err := r.db.Query(`
-	SELECT s.id, s.name, s.author_id, s.song_url, s.cover_picture_url as cover_url, u.username
+func (r *PlaylistRepository) GetSongsFromPlaylist(userID, playlistID int) ([]*models.Song, error) {
+	rows, err := r.db.Query(`WITH tt AS (
+		SELECT song_id, COUNT(*) as like_count
+		FROM favorite_songs
+		GROUP BY song_id
+	)
+	SELECT s.id, s.name, s.author_id, s.song_url, COALESCE(tt.like_count, 0), 
+	CASE
+		WHEN  NOT EXISTS (
+		SELECT TRUE
+		FROM favorite_songs fs
+			WHERE fs.user_id = $1
+			AND fs.song_id = s.id
+			LIMIT 1
+		) THEN TRUE
+		ELSE FALSE
+	END
+	is_liked,
+	s.cover_picture_url AS cover_url, u.username
 	FROM songs AS s
 	INNER JOIN users as u
-	ON s.author_id = u.id
-	WHERE s.id IN(
-		SELECT ps.song_id
-		FROM playlists_songs AS ps
-		WHERE ps.playlist_id = $1
-	);
-	`, playlistID)
+		ON s.author_id = u.id
+	LEFT JOIN tt
+		ON tt.song_id = s.id
+		WHERE s.id IN(
+			SELECT ps.song_id
+			FROM playlists_songs AS ps
+			WHERE ps.playlist_id = $2
+		);`, userID, playlistID)
 
 	if err != nil {
 		return nil, err
@@ -131,8 +148,9 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) ([]*models.Son
 
 	var (
 		songs                         []*models.Song
-		id, authorId                  int
+		id, authorId, likeCount       int
 		name, url, coverUrl, username string
+		isLiked                       bool
 	)
 
 	for rows.Next() {
@@ -141,17 +159,22 @@ func (r *PlaylistRepository) GetSongsFromPlaylist(playlistID int) ([]*models.Son
 			&name,
 			&authorId,
 			&url,
+			&likeCount,
+			&isLiked,
 			&coverUrl,
 			&username,
 		); err != nil {
 			return nil, err
 		}
 		songs = append(songs, &models.Song{
-			ID:       id,
-			Name:     name,
-			Author:   models.User{ID: authorId, UserName: username},
-			URL:      url,
-			CoverURL: coverUrl})
+			ID:        id,
+			Name:      name,
+			Author:    models.User{ID: authorId, UserName: username},
+			URL:       url,
+			CoverURL:  coverUrl,
+			LikeCount: likeCount,
+			IsLiked:   isLiked,
+		})
 	}
 
 	return songs, nil

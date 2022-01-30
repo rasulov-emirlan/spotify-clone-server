@@ -161,18 +161,29 @@ func ListAllPlaylists(store store.Store) echo.HandlerFunc {
 // @Description	Gives you an array of json with songs from a playlist you want
 // @Accept		json
 // @Produce		json
-// @Param       id              path       int          true   "The id for the playlist"
+// @Param       Authorization	header		string		true   "Bearer jwt"
+// @Param       id              path		int			true   "The id for the playlist"
 // @Success		200 	"we created your playlist"
 // @Router		/playlists/{id}	[get]
 func GetSongsFromPlaylist(store store.Store) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		user := c.Get("user")
+		token := user.(*jwt.Token)
+		claims := token.Claims.(jwt.MapClaims)
+
+		userID, ok := claims["userid"].(float64)
+		if !ok {
+			throwError(http.StatusBadRequest, "userid is not a number!", nil, c)
+			return nil
+		}
+
 		playlistID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			throwError(http.StatusBadRequest, "id is not a number!", err, c)
 			return err
 		}
 
-		songs, err := store.Playlist().GetSongsFromPlaylist(playlistID)
+		songs, err := store.Playlist().GetSongsFromPlaylist(int(userID), playlistID)
 		if err != nil {
 			throwError(http.StatusBadRequest, "database did not like your data!", err, c)
 			return err

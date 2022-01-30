@@ -114,7 +114,7 @@ func (s *Server) plugRoutes() error {
 	{
 		playlists.POST("", handlers.PlaylistsCreate(s.Store, s.FS), jwtmiddleware)
 		playlists.GET("", handlers.ListAllPlaylists(s.Store))
-		playlists.GET("/:id", handlers.GetSongsFromPlaylist(s.Store))
+		playlists.GET("/:id", handlers.GetSongsFromPlaylist(s.Store), jwtmiddleware)
 		playlists.PUT("", handlers.PlaylistsAddSong(s.Store), jwtmiddleware)
 	}
 

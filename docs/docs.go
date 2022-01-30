@@ -587,6 +587,13 @@ var doc = `{
                 "summary": "Get Songs from playlist",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer jwt",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "The id for the playlist",
                         "name": "id",
@@ -770,7 +777,7 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "200 if added successfuly"
                     }
                 }
@@ -1031,10 +1038,19 @@ var doc = `{
                 "cover_url": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
+                "is_liked": {
+                    "type": "boolean"
+                },
                 "length": {
+                    "type": "integer"
+                },
+                "like_count": {
                     "type": "integer"
                 },
                 "name": {

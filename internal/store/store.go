@@ -38,7 +38,7 @@ type PlaylistRepository interface {
 	ListAll() ([]*models.Playlist, error)
 	UsersPlaylists(userID int) ([]*models.Playlist, error)
 	AddSong(songID int, playlistID int) error
-	GetSongsFromPlaylist(id int) ([]*models.Song, error)
+	GetSongsFromPlaylist(userID, playlistID int) ([]*models.Song, error)
 }
 
 type GenresRepository interface {

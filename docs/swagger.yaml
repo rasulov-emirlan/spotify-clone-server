@@ -63,9 +63,15 @@ definitions:
         $ref: '#/definitions/models.User'
       cover_url:
         type: string
+      created_at:
+        type: string
       id:
         type: integer
+      is_liked:
+        type: boolean
       length:
+        type: integer
+      like_count:
         type: integer
       name:
         type: string
@@ -463,6 +469,11 @@ paths:
       - application/json
       description: Gives you an array of json with songs from a playlist you want
       parameters:
+      - description: Bearer jwt
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: The id for the playlist
         in: path
         name: id
@@ -616,7 +627,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: 200 if added successfuly
       summary: Add Favorite Author
       tags:
